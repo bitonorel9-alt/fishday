@@ -9,7 +9,7 @@ import { Home } from "./screens/Home";
 import { Log } from "./screens/Log";
 import { Rules } from "./screens/Rules";
 import { updatedAgo } from "./ui/format";
-import { Icon } from "./ui/parts";
+import { Icon, WaveLine } from "./ui/parts";
 import { useFavorites } from "./ui/useFavorites";
 
 const TABS = [
@@ -63,7 +63,17 @@ export function App() {
         <button type="button" class="primary" onClick={() => void refresh()}>נסה שוב</button>
       </div>
     ) : (
-      <p class="muted empty" role="status">טוען נתוני ים…</p>
+      <>
+        <section class="hero">
+          <div class="hero-body">
+            <p class="eyebrow" role="status">טוען נתוני ים…</p>
+          </div>
+          <WaveLine height={null} />
+        </section>
+        <div class="card skeleton" />
+        <div class="card skeleton" />
+        <div class="card skeleton" />
+      </>
     );
   } else if (beach) {
     screen = <BeachDetail key={beach.id} beach={beach} hours={scored[beach.id] ?? []} forecast={forecast} now={now} favorite={favorites.includes(beach.id)} onToggleFavorite={() => toggle(beach.id)} />;

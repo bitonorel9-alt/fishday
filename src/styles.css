@@ -122,6 +122,8 @@ main {
 [data-tier="poor"] { background: var(--poor); color: var(--on-poor); }
 [data-tier="none"] { background: var(--none); color: var(--on-none); }
 
+.skeleton { height: 66px; }
+
 /* בית */
 .hero {
   position: relative;
