@@ -2,14 +2,16 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 import { useForecast } from "./data/useForecast";
 import { BEACHES } from "./domain/beaches";
 import { scoreForecast } from "./domain/insights";
-import { israelNow } from "./domain/time";
+import { skyPhase } from "./domain/sky";
+import { addDays, israelClock, israelNow } from "./domain/time";
 import { Beaches } from "./screens/Beaches";
 import { BeachDetail } from "./screens/BeachDetail";
 import { Home } from "./screens/Home";
 import { Log } from "./screens/Log";
 import { Rules } from "./screens/Rules";
 import { updatedAgo } from "./ui/format";
-import { Icon, WaveLine } from "./ui/parts";
+import { Hero } from "./ui/Hero";
+import { Icon, Logo } from "./ui/parts";
 import { useFavorites } from "./ui/useFavorites";
 
 const TABS = [
@@ -52,6 +54,15 @@ export function App() {
   const beachId = hash.startsWith("#/beach/") ? hash.slice("#/beach/".length) : null;
   const beach = BEACHES.find((b) => b.id === beachId);
   const needsForecast = hash === "#/" || hash === "#/beaches" || beachId !== null;
+  const clock = israelClock(new Date(nowMs));
+  const todaySun = forecast?.days.find((d) => d.date === now.date)?.sun ?? null;
+  const tomorrowSun = forecast?.days.find((d) => d.date === addDays(now.date, 1))?.sun ?? null;
+  const phase = todaySun ? skyPhase(clock, todaySun) : "golden";
+  const overHero = !beachId && hash !== "#/beaches" && hash !== "#/rules" && hash !== "#/log";
+
+  useEffect(() => {
+    document.documentElement.dataset.sky = phase;
+  }, [phase]);
 
   let screen;
   if (hash === "#/rules") screen = <Rules now={now} />;
@@ -64,12 +75,9 @@ export function App() {
       </div>
     ) : (
       <>
-        <section class="hero">
-          <div class="hero-body">
-            <p class="eyebrow" role="status">טוען נתוני ים…</p>
-          </div>
-          <WaveLine height={null} />
-        </section>
+        <Hero waveHeight={null}>
+          <p class="hero-eyebrow" role="status">טוען נתוני ים…</p>
+        </Hero>
         <div class="card skeleton" />
         <div class="card skeleton" />
         <div class="card skeleton" />
@@ -80,13 +88,13 @@ export function App() {
   } else if (hash === "#/beaches") {
     screen = <Beaches scored={scored} now={now} favorites={favorites} onToggleFavorite={toggle} />;
   } else {
-    screen = <Home scored={scored} now={now} favorites={favorites} onToggleFavorite={toggle} />;
+    screen = <Home scored={scored} now={now} clock={clock} sun={todaySun} tomorrowSun={tomorrowSun} favorites={favorites} onToggleFavorite={toggle} />;
   }
 
   return (
     <>
-      <header class="topbar">
-        <a href="#/" class="brand" dir="ltr" aria-label="FishDay, דף הבית">Fish<span>Day</span></a>
+      <header class={`topbar${overHero ? " topbar-over" : ""}`}>
+        <a href="#/" class="brand" dir="ltr" aria-label="FishDay, דף הבית"><Logo /><b>Fish<span>Day</span></b></a>
         {needsForecast && forecast && (
           <span class="status small" role="status">
             {status === "failed" ? "אין חיבור · " : ""}{updatedAgo(forecast.fetchedAt, nowMs)}

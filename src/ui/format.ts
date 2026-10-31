@@ -17,6 +17,13 @@ export function shortDate(date: string): string {
 
 export const hourLabel = (hour: number) => `${pad2(hour)}:00`;
 
+export function durationLabel(hours: number): string {
+  const total = Math.round(hours * 60);
+  if (total < 60) return `${total} דק'`;
+  const h = Math.floor(total / 60);
+  return `${h}:${pad2(total % 60)} שע'`;
+}
+
 export function updatedAgo(fetchedAt: number, nowMs: number): string {
   const minutes = Math.max(0, Math.round((nowMs - fetchedAt) / 60_000));
   if (minutes < 1) return "עודכן עכשיו";

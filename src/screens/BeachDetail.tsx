@@ -7,7 +7,7 @@ import { GUST_WARNING_KMH, WAVE_WARNING_M } from "../domain/score";
 import { formatHour, type LocalNow } from "../domain/time";
 import { periodText, TIER_LABEL, tierOf, timeText, waveText, windText } from "../ui/explain";
 import { dayLabel, hourLabel, shortDate } from "../ui/format";
-import { Attribution, ScoreBadge, Star } from "../ui/parts";
+import { Attribution, ScoreBadge, ScoreCurve, Star } from "../ui/parts";
 
 interface Props {
   beach: Beach;
@@ -57,13 +57,14 @@ export function BeachDetail({ beach, hours, forecast, now, favorite, onToggleFav
       </div>
 
       <div class="hour-strip" role="group" aria-label="ציון לפי שעה" ref={stripRef} tabIndex={0}>
-        {dayHours.map((h) => (
-          <button type="button" key={h.time} aria-pressed={h.time === selected?.time} onClick={() => setPicked(h.time)}
-            aria-label={`${hourLabel(h.hour)}, ${h.score === null ? TIER_LABEL.none : `ציון ${h.score}`}`}>
-            <span class="bar-track"><i data-tier={tierOf(h.score)} style={{ height: `${(h.score ?? 1) * 10}%` }} /></span>
-            <small dir="ltr">{hourLabel(h.hour)}</small>
-          </button>
-        ))}
+        <ScoreCurve
+          hours={dayHours}
+          selected={selected?.time ?? null}
+          sunrise={day?.sun.sunrise ?? 6}
+          sunset={day?.sun.sunset ?? 18}
+          onSelect={setPicked}
+          labelOf={(h) => ({ hour: hourLabel(h.hour), aria: `${hourLabel(h.hour)}, ${h.score === null ? TIER_LABEL.none : `ציון ${h.score}`}` })}
+        />
       </div>
 
       {selected && (

@@ -13,7 +13,7 @@ interface Props {
 export function Beaches({ scored, now, favorites, onToggleFavorite }: Props) {
   return (
     <Page title="חופים">
-      <p class="muted">מצפון לדרום. הציון הוא לשעה הנוכחית, והפסים מראים את 12 השעות הבאות.</p>
+      <p class="muted">מצפון לדרום. הציון הוא לשעה הנוכחית, והעקומה מראה את 12 השעות הבאות.</p>
       <ul class="beach-list">
         {BEACHES.map((beach) => (
           <BeachRow key={beach.id} beach={beach} hours={scored[beach.id] ?? []} now={now} favorite={favorites.includes(beach.id)} onToggle={() => onToggleFavorite(beach.id)} />

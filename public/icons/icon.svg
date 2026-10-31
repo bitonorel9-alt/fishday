@@ -1,7 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#08323f"/>
-  <circle cx="256" cy="196" r="84" fill="#e8622c"/>
-  <path d="M256 150v62c0 26 34 26 34 0" fill="none" stroke="#fbf8f0" stroke-width="16" stroke-linecap="round"/>
-  <path d="M0 322c43 0 43-34 85-34s43 34 86 34 42-34 85-34 43 34 85 34 43-34 86-34 42 34 85 34v190H0z" fill="#2b8b96"/>
-  <path d="M0 392c43 0 43-34 85-34s43 34 86 34 42-34 85-34 43 34 85 34 43-34 86-34 42 34 85 34v120H0z" fill="#bfe6dc"/>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#151c4a"/>
+      <stop offset=".5" stop-color="#5a2f78"/>
+      <stop offset="1" stop-color="#d9506e"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd36b"/>
+      <stop offset=".55" stop-color="#ff8a3c"/>
+      <stop offset="1" stop-color="#f2545b"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#sky)"/>
+  <circle cx="256" cy="256" r="168" fill="url(#sun)"/>
+  <path d="M256 128v98c0 48 60 48 60 0" fill="none" stroke="#151c4a" stroke-width="24" stroke-linecap="round"/>
+  <clipPath id="disc"><circle cx="256" cy="256" r="168"/></clipPath>
+  <g fill="none" stroke-width="20" clip-path="url(#disc)">
+    <path stroke="#7b2f6e" d="M60 296c33 0 33-18 65-18s33 18 65 18 33-18 66-18 33 18 65 18 33-18 65-18 33 18 66 18"/>
+    <path stroke="#4a2c70" stroke-width="26" d="M60 348c33 0 33-18 65-18s33 18 65 18 33-18 66-18 33 18 65 18 33-18 65-18 33 18 66 18"/>
+  </g>
+  <path d="M0 410c43 0 43-26 85-26s43 26 86 26 42-26 85-26 43 26 85 26 43-26 86-26 42 26 85 26v102H0z" fill="#151c4a"/>
 </svg>

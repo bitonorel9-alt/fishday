@@ -18,6 +18,13 @@ export function israelNow(at: Date = new Date()): LocalNow {
   return { date: `${get("year")}-${get("month")}-${get("day")}`, hour: Number(get("hour")) };
 }
 
+/** השעה בישראל כמספר עשרוני, למשל 17.5. */
+export function israelClock(at: Date = new Date()): number {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(at);
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value ?? 0);
+  return get("hour") + get("minute") / 60;
+}
+
 export function addDays(date: string, days: number): string {
   const d = new Date(`${date}T12:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
