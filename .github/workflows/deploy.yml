@@ -1,7 +1,8 @@
 name: Deploy to GitHub Pages
 
-# הפעלה ידנית בלבד עד אישור הפרסום. אחרי האישור מוסיפים push ל-main.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
