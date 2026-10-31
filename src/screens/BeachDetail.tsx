@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "preact/hooks";
+import { FISH } from "../content/fish";
+import { listCatches } from "../data/catchLog";
 import type { Forecast } from "../data/forecast";
-import { BOTTOM_LABEL, LIKELY_FISH, type Beach } from "../domain/beaches";
+import { BOTTOM_LABEL, type Beach } from "../domain/beaches";
+import { fishForBeach, logShares, type LogShare } from "../domain/fishMatch";
 import { hourAt, type ScoredHour } from "../domain/insights";
 import { moonPhase } from "../domain/moon";
 import { GUST_WARNING_KMH, WAVE_WARNING_M } from "../domain/score";
@@ -27,6 +30,12 @@ export function BeachDetail({ beach, hours, forecast, now, favorite, onToggleFav
   const day = forecast.days.find((d) => d.date === date);
   const moon = moonPhase(new Date(`${date}T12:00:00Z`));
   const stripRef = useRef<HTMLDivElement>(null);
+  const popular = fishForBeach(FISH, beach.bottom, Number(date.slice(5, 7)));
+  const [mine, setMine] = useState<LogShare[]>([]);
+
+  useEffect(() => {
+    listCatches().then((entries) => setMine(logShares(entries, beach.id))).catch(() => setMine([]));
+  }, [beach.id]);
 
   useEffect(() => {
     stripRef.current?.querySelector('[aria-pressed="true"]')?.scrollIntoView({ inline: "center", block: "nearest" });
@@ -124,9 +133,48 @@ export function BeachDetail({ beach, hours, forecast, now, favorite, onToggleFav
         <div><span class="muted small">ירח</span><strong>{moon.name}</strong></div>
       </section>
 
-      <section class="card shore">
-        <p><strong>החוף.</strong> {beach.shore}</p>
-        <p class="muted small">קרקעית: {BOTTOM_LABEL[beach.bottom]}. דגים אפשריים לפי סוג החוף: {LIKELY_FISH[beach.bottom]}.</p>
+      <section class="card rule shore">
+        <h2>החוף</h2>
+        <p>{beach.shore}</p>
+        <p class="muted small">קרקעית: {BOTTOM_LABEL[beach.bottom]}</p>
+      </section>
+
+      <section class="card rule">
+        <h2>דגים פופולריים כאן</h2>
+        <ul class="match-list">
+          {popular.map(({ fish, match }) => (
+            <li key={fish.id}>
+              <a href={`#/fish/${fish.id}`}>{fish.name}</a>
+              <span class="match-bar"><i style={{ width: `${match}%` }} /></span>
+              <b><bdi>{match}%</bdi></b>
+            </li>
+          ))}
+        </ul>
+        <p class="muted small">אחוז התאמה הוא הערכה לפי סוג החוף, העונה ושכיחות הדג בישראל. אין נתוני שלל לכל חוף.</p>
+        {mine.length > 0 && (
+          <>
+            <h3>מהיומן שלך</h3>
+            <ul class="match-list">
+              {mine.slice(0, 4).map((s) => (
+                <li key={s.fish}>
+                  <span>{s.fish}</span>
+                  <span class="match-bar match-mine"><i style={{ width: `${s.percent}%` }} /></span>
+                  <b><bdi>{s.percent}%</bdi></b>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
+
+      <section class="card rule">
+        <h2>טיפים לדיג</h2>
+        <ul class="plain">{beach.tips.map((t) => <li key={t}>{t}</li>)}</ul>
+      </section>
+
+      <section class="card rule">
+        <h2>מקומות יפים</h2>
+        <ul class="plain">{beach.sights.map((t) => <li key={t}>{t}</li>)}</ul>
       </section>
 
       <p class="muted small">הציון הוא הערכה לדיג בחכה מהחוף. הוא לא כולל זרמים, עכירות ולחץ ברומטרי.</p>

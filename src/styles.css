@@ -1,11 +1,13 @@
 /* שפה ויזואלית: שקיעה בעתלית. הפלטה נלקחה מהתמונה: כחול ערב, לילך של עננים, זהב, גחלת ושחור חול רטוב. */
 :root {
   color-scheme: light dark;
-  --bg: #fff3e4;
-  --surface: #fffaf3;
-  --surface-line: #f0dcc5;
-  --ink: #1b1a3a;
-  --muted: #5d5874;
+  --bg: #cdeef0;
+  --surface: rgb(255 255 255 / 82%);
+  --surface-line: rgb(12 80 100 / 18%);
+  --sprite: rgb(8 70 96 / 24%);
+  --ray: rgb(255 255 255 / 55%);
+  --ink: #12283f;
+  --muted: #2f4a5a;
   --gold: #b86a00;
   --accent: #c8421e;
   --curve-ink: #1b1a3a;
@@ -17,7 +19,7 @@
   --good: #2fc4b2; --on-good: #03241f;
   --ok: #b6c0ec; --on-ok: #171b3f;
   --poor: #f2545b; --on-poor: #2b0507;
-  --none: #e6dccd; --on-none: #5d5874;
+  --none: #dbe7e8; --on-none: #2f4a5a;
   --display: "Karantina", "Arial Hebrew", system-ui, sans-serif;
   --body: "IBM Plex Sans Hebrew", "Segoe UI", system-ui, sans-serif;
   --tab-h: 62px;
@@ -28,11 +30,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0a0f22;
-    --surface: #141b38;
-    --surface-line: #262f57;
-    --ink: #f4f1ec;
-    --muted: #aeb2cc;
+    --bg: #05213a;
+    --surface: rgb(6 20 44 / 80%);
+    --surface-line: rgb(120 190 220 / 22%);
+    --sprite: rgb(130 205 235 / 17%);
+    --ray: rgb(120 210 235 / 13%);
+    --ink: #f1f6f6;
+    --muted: #b4c8d4;
     --gold: #ffc05a;
     --accent: #ff9460;
     --curve-ink: #f4f1ec;
@@ -40,8 +44,8 @@
     --alert-ink: #ffcfc9;
     --note-bg: #3a2f10;
     --note-ink: #f6e2a6;
-    --none: #262f57;
-    --on-none: #aeb2cc;
+    --none: #1c3a55;
+    --on-none: #b4c8d4;
   }
 }
 
@@ -68,16 +72,57 @@ body::before {
   content: "";
   position: fixed;
   inset: 0 0 auto;
-  height: 300px;
+  height: 220px;
   z-index: -1;
   background: linear-gradient(180deg, var(--sky-1), var(--sky-2) 45%, transparent);
-  opacity: 0.24;
+  opacity: 0.2;
   transition: background 1s;
 }
 
 @media (prefers-color-scheme: dark) {
-  body::before { opacity: 0.55; }
+  body::before { opacity: 0.4; }
 }
+
+/* העולם התת-ימי: מאחורי הכל, בצבע חיוור כדי שהטקסט יישאר קריא. */
+.sea { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: var(--bg); color: var(--sprite); pointer-events: none; }
+.sea > * { animation-fill-mode: backwards; }
+.sea svg { display: block; width: 100%; height: 100%; fill: var(--sprite); }
+.sea .eye { fill: var(--bg); }
+.rays {
+  position: absolute;
+  inset: -20% -30% auto;
+  height: 80%;
+  background: repeating-conic-gradient(from 165deg at 50% -10%, var(--ray) 0 3deg, transparent 3deg 11deg);
+  mask-image: linear-gradient(180deg, #000, transparent 85%);
+}
+.swim { position: absolute; left: 0; animation: swim-left linear infinite; }
+.swim.to-right { animation-name: swim-right; }
+.shark-1 { top: 58%; width: 300px; height: 138px; animation-duration: 58s; animation-delay: -12s; }
+.shark-2 { top: 22%; width: 170px; height: 78px; animation-name: swim-right; animation-duration: 76s; animation-delay: -40s; opacity: 0.7; }
+.turtle { top: 40%; width: 96px; height: 60px; animation-name: swim-right; animation-duration: 90s; animation-delay: -60s; }
+.f1 { top: 14%; width: 64px; height: 40px; animation-duration: 34s; animation-delay: -6s; }
+.f2 { top: 74%; width: 48px; height: 30px; animation-name: swim-right; animation-duration: 28s; animation-delay: -18s; }
+.f3 { top: 33%; width: 84px; height: 52px; animation-duration: 46s; animation-delay: -30s; }
+.school { top: 86%; display: grid; grid-template-columns: repeat(4, 30px); gap: 6px 10px; width: 150px; animation-duration: 40s; animation-delay: -22s; }
+.school svg { height: 19px; }
+.school svg:nth-child(even) { transform: translateY(8px); }
+.jelly { position: absolute; color: var(--sprite); animation: drift-up 11s ease-in-out infinite alternate; }
+.j1 { top: 28%; left: 8%; width: 44px; height: 66px; }
+.j2 { top: 66%; right: 7%; width: 30px; height: 45px; animation-delay: -5s; }
+.bubble { position: absolute; bottom: -20px; width: 9px; height: 9px; border-radius: 50%; border: 1.500px solid var(--sprite); animation: rise 18s linear infinite; }
+.b0 { left: 8%; animation-delay: -2s; }
+.b1 { left: 22%; width: 6px; height: 6px; animation-delay: -9s; animation-duration: 14s; }
+.b2 { left: 37%; animation-delay: -5s; animation-duration: 22s; }
+.b3 { left: 51%; width: 12px; height: 12px; animation-delay: -13s; }
+.b4 { left: 64%; width: 6px; height: 6px; animation-delay: -1s; animation-duration: 16s; }
+.b5 { left: 76%; animation-delay: -16s; animation-duration: 20s; }
+.b6 { left: 88%; width: 11px; height: 11px; animation-delay: -7s; animation-duration: 25s; }
+.b7 { left: 95%; width: 6px; height: 6px; animation-delay: -11s; }
+
+@keyframes swim-left { from { transform: translate3d(115vw, 0, 0); } to { transform: translate3d(-340px, 0, 0); } }
+@keyframes swim-right { from { transform: translate3d(-340px, 0, 0) scaleX(-1); } to { transform: translate3d(115vw, 0, 0) scaleX(-1); } }
+@keyframes rise { to { transform: translate3d(14px, -110vh, 0); } }
+@keyframes drift-up { to { transform: translate3d(0, -26px, 0); } }
 
 #app { position: relative; max-width: 600px; margin: 0 auto; min-height: 100dvh; }
 
@@ -305,6 +350,21 @@ main {
 .sky { display: flex; justify-content: space-between; gap: 12px; }
 .sky div { display: flex; flex-direction: column; }
 
+/* דגים */
+.fish-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.fish-card { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; height: 100%; min-height: 96px; padding: 12px 14px; text-decoration: none; }
+.fish-card strong { font: 700 28px/1.05 var(--display); }
+.facts-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.facts-grid div { display: flex; flex-direction: column; min-width: 0; }
+.match-list { display: flex; flex-direction: column; gap: 6px; }
+.match-list li { display: grid; grid-template-columns: 96px 1fr 42px; align-items: center; gap: 8px; }
+.match-list a { text-decoration: underline; text-underline-offset: 2px; }
+.match-list b { font-weight: 600; text-align: end; font-variant-numeric: tabular-nums; }
+.match-bar { display: block; height: 8px; border-radius: 99px; background: var(--surface-line); overflow: hidden; }
+.match-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #2fc4b2, #ffb23e); }
+.match-mine i { background: linear-gradient(90deg, #ffb23e, #f2545b); }
+.rule h3 { margin: 6px 0 0; font: 700 22px/1.1 var(--display); }
+
 /* מה מותר */
 .rule { display: flex; flex-direction: column; gap: 8px; }
 .rule h2 { font: 700 30px/1.1 var(--display); }
@@ -385,5 +445,6 @@ main {
 .skeleton { height: 70px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-sun, .hero-score, .sun-glow, .wave { animation: none; }
+  .hero-sun, .hero-score, .sun-glow, .wave, .swim, .jelly, .bubble { animation: none; }
+  .swim { left: 12%; }
 }

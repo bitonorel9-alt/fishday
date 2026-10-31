@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
+import { FISH } from "./content/fish";
 import { useForecast } from "./data/useForecast";
 import { BEACHES } from "./domain/beaches";
 import { scoreForecast } from "./domain/insights";
@@ -6,17 +7,20 @@ import { skyPhase } from "./domain/sky";
 import { addDays, israelClock, israelNow } from "./domain/time";
 import { Beaches } from "./screens/Beaches";
 import { BeachDetail } from "./screens/BeachDetail";
+import { FishDetail, FishList } from "./screens/Fish";
 import { Home } from "./screens/Home";
 import { Log } from "./screens/Log";
 import { Rules } from "./screens/Rules";
 import { updatedAgo } from "./ui/format";
 import { Hero } from "./ui/Hero";
 import { Icon, Logo } from "./ui/parts";
+import { Underwater } from "./ui/Underwater";
 import { useFavorites } from "./ui/useFavorites";
 
 const TABS = [
   { href: "#/", label: "בית", icon: "home" },
   { href: "#/beaches", label: "חופים", icon: "beaches" },
+  { href: "#/fish", label: "דגים", icon: "fish" },
   { href: "#/rules", label: "מה מותר", icon: "rules" },
   { href: "#/log", label: "יומן", icon: "log" },
 ] as const;
@@ -58,7 +62,9 @@ export function App() {
   const todaySun = forecast?.days.find((d) => d.date === now.date)?.sun ?? null;
   const tomorrowSun = forecast?.days.find((d) => d.date === addDays(now.date, 1))?.sun ?? null;
   const phase = todaySun ? skyPhase(clock, todaySun) : "golden";
-  const overHero = !beachId && hash !== "#/beaches" && hash !== "#/rules" && hash !== "#/log";
+  const fishId = hash.startsWith("#/fish/") ? hash.slice("#/fish/".length) : null;
+  const fish = FISH.find((f) => f.id === fishId);
+  const overHero = hash === "#/";
 
   useEffect(() => {
     document.documentElement.dataset.sky = phase;
@@ -67,6 +73,8 @@ export function App() {
   let screen;
   if (hash === "#/rules") screen = <Rules now={now} />;
   else if (hash === "#/log") screen = <Log now={now} />;
+  else if (fish) screen = <FishDetail fish={fish} month={Number(now.date.slice(5, 7))} />;
+  else if (hash.startsWith("#/fish")) screen = <FishList />;
   else if (!forecast || !scored) {
     screen = status === "failed" ? (
       <div class="empty">
@@ -93,6 +101,7 @@ export function App() {
 
   return (
     <>
+      <Underwater />
       <header class={`topbar${overHero ? " topbar-over" : ""}`}>
         <a href="#/" class="brand" dir="ltr" aria-label="FishDay, דף הבית"><Logo /><b>Fish<span>Day</span></b></a>
         {needsForecast && forecast && (
@@ -104,7 +113,7 @@ export function App() {
       <main>{screen}</main>
       <nav class="tabbar" aria-label="ניווט ראשי">
         {TABS.map((t) => {
-          const active = t.href === "#/" ? hash === "#/" : t.href === "#/beaches" ? hash === t.href || beachId !== null : hash === t.href;
+          const active = t.href === "#/" ? hash === "#/" : t.href === "#/beaches" ? hash === t.href || beachId !== null : hash.startsWith(t.href);
           return (
             <a key={t.href} href={t.href} aria-current={active ? "page" : undefined}>
               <Icon name={t.icon} />
