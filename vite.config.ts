@@ -30,6 +30,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,webp,woff2}"],
+        globIgnores: ["widget/**"],
         // גרסה חדשה נכנסת מיד: מידע על חוקים לא יכול להישאר ישן.
         skipWaiting: true,
         clientsClaim: true,

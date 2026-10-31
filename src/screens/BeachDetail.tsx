@@ -11,6 +11,7 @@ import { formatHour, type LocalNow } from "../domain/time";
 import { periodText, TIER_LABEL, tierOf, timeText, waveText, windText } from "../ui/explain";
 import { dayLabel, hourLabel, shortDate } from "../ui/format";
 import { Attribution, ScoreBadge, ScoreCurve, Star } from "../ui/parts";
+import { windLabel, windValue, type WindUnit } from "../ui/settings";
 
 interface Props {
   beach: Beach;
@@ -19,9 +20,10 @@ interface Props {
   now: LocalNow;
   favorite: boolean;
   onToggleFavorite: () => void;
+  windUnit: WindUnit;
 }
 
-export function BeachDetail({ beach, hours, forecast, now, favorite, onToggleFavorite }: Props) {
+export function BeachDetail({ beach, hours, forecast, now, favorite, onToggleFavorite, windUnit }: Props) {
   const days = forecast.days.filter((d) => d.date >= now.date);
   const [date, setDate] = useState(days[0]?.date ?? now.date);
   const dayHours = hours.filter((h) => h.date === date);
@@ -104,8 +106,8 @@ export function BeachDetail({ beach, hours, forecast, now, favorite, onToggleFav
             <dd>
               {selected.windSpeed === null || selected.windDirection === null ? "אין נתון." : (
                 <>
-                  <strong><bdi>{Math.round(selected.windSpeed)}</bdi> קמ"ש</strong>
-                  {selected.windGust !== null && <>, משבים <bdi>{Math.round(selected.windGust)}</bdi></>}. {windText(selected.windSpeed, selected.windDirection, beach)}
+                  <strong><bdi>{windValue(selected.windSpeed, windUnit)}</bdi> {windLabel(windUnit)}</strong>
+                  {selected.windGust !== null && <>, משבים <bdi>{windValue(selected.windGust, windUnit)}</bdi></>}. {windText(selected.windSpeed, selected.windDirection, beach)}
                 </>
               )}
             </dd>

@@ -11,6 +11,9 @@ const ICONS = {
   rules: "M12 3 5 6v5.500c0 4.300 2.900 7.600 7 9.500 4.100-1.900 7-5.200 7-9.500V6zM9 12l2.200 2.200L15.500 10",
   fish: "M4.500 12c2.500-3.500 5.500-5 9-5 2 0 4 .9 6 2.500V14.500c-2 1.600-4 2.500-6 2.500-3.500 0-6.500-1.500-9-5ZM2.500 8.500 4.500 12l-2 3.500M15.500 11h.01",
   log: "M6 3h12v18H6zM9.500 8h5M9.500 12h5M9.500 16h3",
+  settings: "M12 8.500a3.500 3.500 0 1 0 0 7 3.500 3.500 0 0 0 0-7ZM12 2.500v3M12 18.500v3M2.500 12h3M18.500 12h3M5.300 5.300l2.100 2.100M16.600 16.600l2.100 2.100M18.700 5.300l-2.100 2.100M7.400 16.600l-2.100 2.100",
+  sound: "M4 9.500v5h3.500L12 18.500v-13L7.500 9.500H4ZM15.500 9a4 4 0 0 1 0 6M18 6.500a8 8 0 0 1 0 11",
+  mute: "M4 9.500v5h3.500L12 18.500v-13L7.500 9.500H4ZM16 9.500l5 5M21 9.500l-5 5",
 } as const;
 
 export function Icon({ name }: { name: keyof typeof ICONS }) {
@@ -21,25 +24,28 @@ export function Icon({ name }: { name: keyof typeof ICONS }) {
   );
 }
 
-/** הלוגו: שמש שוקעת שחתוכה בגלים, וקרס שיורד ממנה אל הים. */
+/** הלוגו: דג זהב שקופץ מעל גל, בתוך עיגול ים. */
 export function Logo() {
   return (
-    <svg class="logo-mark" viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
+    <svg class="logo-mark" viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
       <defs>
-        <linearGradient id="logo-sun" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#ffd36b" />
-          <stop offset=".55" stop-color="#ff8a3c" />
-          <stop offset="1" stop-color="#f2545b" />
+        <linearGradient id="logo-sea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#19c3d1" />
+          <stop offset="1" stop-color="#075985" />
         </linearGradient>
-        <mask id="logo-cut">
-          <rect width="48" height="48" fill="#fff" />
-          <path d="M0 27c4 0 4-2.200 8-2.200s4 2.200 8 2.200 4-2.200 8-2.200 4 2.200 8 2.200 4-2.200 8-2.200 4 2.200 8 2.200" fill="none" stroke="#000" stroke-width="2.400" />
-          <path d="M0 34c4 0 4-2.200 8-2.200s4 2.200 8 2.200 4-2.200 8-2.200 4 2.200 8 2.200 4-2.200 8-2.200 4 2.200 8 2.200" fill="none" stroke="#000" stroke-width="3" />
-          <path d="M0 40.500c4 0 4-2.200 8-2.200s4 2.200 8 2.200 4-2.200 8-2.200 4 2.200 8 2.200 4-2.200 8-2.200 4 2.200 8 2.200" fill="none" stroke="#000" stroke-width="3.600" />
-          <path d="M24 9v12.500c0 6 7.500 6 7.500 0" fill="none" stroke="#000" stroke-width="3.200" stroke-linecap="round" />
-        </mask>
+        <linearGradient id="logo-fish" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#ff8a3c" />
+          <stop offset="1" stop-color="#ffd36b" />
+        </linearGradient>
+        <clipPath id="logo-disc"><circle cx="24" cy="24" r="23" /></clipPath>
       </defs>
-      <circle cx="24" cy="24" r="21" fill="url(#logo-sun)" mask="url(#logo-cut)" />
+      <circle cx="24" cy="24" r="23" fill="url(#logo-sea)" />
+      <g clip-path="url(#logo-disc)">
+        <path d="M0 37c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3 4 3 8 3v12H0z" fill="#fff" fill-opacity=".9" />
+        <path d="M0 42c4 0 4-2.500 8-2.500s4 2.500 8 2.500 4-2.500 8-2.500 4 2.500 8 2.500 4-2.500 8-2.500 4 2.500 8 2.500v8H0z" fill="#075985" />
+      </g>
+      <path d="M40 9C28 7.500 17 13 12.500 24L6 22l3.500 7-1.500 7 6.500-4C27 33 37 23 40 9Z" fill="url(#logo-fish)" />
+      <circle cx="33.500" cy="13.500" r="1.800" fill="#075985" />
     </svg>
   );
 }

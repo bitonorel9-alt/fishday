@@ -21,13 +21,13 @@ function Jelly({ class: cls }: { class: string }) {
 }
 
 /** העולם התת-ימי מאחורי הכיתוב. קישוט בלבד, ולכן נטען אחרי שהתוכן על המסך. */
-export function Underwater() {
+export function Underwater({ animated }: { animated: boolean }) {
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const timer = setTimeout(() => setReady(true), 3500);
     return () => clearTimeout(timer);
   }, []);
-  if (!ready) return <div class="sea" aria-hidden="true" />;
+  if (!ready || !animated) return <div class="sea" aria-hidden="true" />;
 
   return (
     <div class="sea" aria-hidden="true">

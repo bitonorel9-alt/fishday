@@ -5,6 +5,8 @@ import { BEACHES } from "../domain/beaches";
 import type { LocalNow } from "../domain/time";
 import { shortDate } from "../ui/format";
 import { Page } from "../ui/parts";
+import { loadSettings } from "../ui/settings";
+import { castSound, reelSound } from "../ui/sound";
 
 function Photo({ blob, alt }: { blob: Blob; alt: string }) {
   const url = useMemo(() => URL.createObjectURL(blob), [blob]);
@@ -14,7 +16,7 @@ function Photo({ blob, alt }: { blob: Blob; alt: string }) {
 
 function CatchForm({ now, onSaved, onCancel }: { now: LocalNow; onSaved: () => void; onCancel: () => void }) {
   const [date, setDate] = useState(now.date);
-  const [beachId, setBeachId] = useState("atlit");
+  const [beachId, setBeachId] = useState(() => loadSettings().homeBeach ?? "atlit");
   const [fish, setFish] = useState("");
   const [size, setSize] = useState("");
   const [bait, setBait] = useState("");
@@ -39,6 +41,8 @@ function CatchForm({ now, onSaved, onCancel }: { now: LocalNow; onSaved: () => v
         photo: file ? await shrinkPhoto(file) : null,
         createdAt: Date.now(),
       });
+      const { clickSounds, volume } = loadSettings();
+      if (clickSounds) reelSound(volume);
       onSaved();
     } catch {
       setError("השמירה נכשלה. נסה שוב.");
@@ -102,7 +106,11 @@ export function Log({ now }: { now: LocalNow }) {
       {adding ? (
         <CatchForm now={now} onCancel={() => setAdding(false)} onSaved={() => { setAdding(false); void load(); }} />
       ) : (
-        <button type="button" class="primary wide" onClick={() => setAdding(true)}>הוספת שלל</button>
+        <button type="button" class="primary wide" onClick={() => {
+          const { clickSounds, volume } = loadSettings();
+          if (clickSounds) castSound(volume);
+          setAdding(true);
+        }}>הוספת שלל</button>
       )}
       {entries?.length === 0 && !adding && <p class="muted empty">עדיין אין שלל. הדג הראשון מחכה.</p>}
       <ul class="catch-list">

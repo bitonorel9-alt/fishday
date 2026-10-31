@@ -5,6 +5,7 @@ import { nextSunEvent } from "../domain/sky";
 import type { LocalNow } from "../domain/time";
 import { TIER_LABEL, tierOf } from "../ui/explain";
 import { dayLabel, durationLabel, hourLabel } from "../ui/format";
+import { windLabel, windValue, type WindUnit } from "../ui/settings";
 import { Hero, SunArc } from "../ui/Hero";
 import { Attribution, BeachRow, ScoreBadge } from "../ui/parts";
 
@@ -16,20 +17,24 @@ interface Props {
   tomorrowSun: Sun | null;
   favorites: string[];
   onToggleFavorite: (id: string) => void;
+  windUnit: WindUnit;
+  homeBeach: string | null;
 }
 
-export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggleFavorite }: Props) {
+export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggleFavorite, windUnit, homeBeach }: Props) {
   const best = bestNow(scored, now);
   const window = nextWindow(scored, now);
   const warnings = hasWarningSoon(scored, now);
   const event = sun ? nextSunEvent(clock, sun, tomorrowSun ?? undefined) : null;
-  const shown = favorites.length
+  const base = favorites.length
     ? BEACHES.filter((b) => favorites.includes(b.id))
     : spotsNow(scored, now)
         .filter((s) => s.beach.legal !== "reserve")
         .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
         .slice(0, 3)
         .map((s) => s.beach);
+  const mine = BEACHES.find((b) => b.id === homeBeach);
+  const shown = mine ? [mine, ...base.filter((b) => b.id !== mine.id)] : base;
 
   return (
     <>
@@ -47,7 +52,7 @@ export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggle
             <ul class="chips">
               <li>{TIER_LABEL[tierOf(best.score)]}</li>
               {best.hour.waveHeight !== null && <li>גלים <bdi>{best.hour.waveHeight.toFixed(1)}</bdi> מ'</li>}
-              {best.hour.windSpeed !== null && <li>רוח <bdi>{Math.round(best.hour.windSpeed)}</bdi> קמ"ש</li>}
+              {best.hour.windSpeed !== null && <li>רוח <bdi>{windValue(best.hour.windSpeed, windUnit)}</bdi> {windLabel(windUnit)}</li>}
               {best.hour.waterTemp !== null && <li>מים <bdi>{Math.round(best.hour.waterTemp)}°</bdi></li>}
             </ul>
           </>
