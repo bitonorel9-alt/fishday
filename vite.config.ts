@@ -8,7 +8,7 @@ export default defineConfig({
     preact(),
     VitePWA({
       registerType: "autoUpdate",
-      injectRegister: "script-defer",
+      injectRegister: false,
       includeAssets: ["icons/apple-touch-icon.png", "icons/icon.svg"],
       manifest: {
         name: "FishDay",
