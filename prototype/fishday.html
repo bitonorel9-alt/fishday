@@ -1,0 +1,224 @@
+<title>FishDay</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Secular+One&family=IBM+Plex+Sans+Hebrew:wght@400;500;600&display=swap">
+<style>
+/* Layout: one narrow column like a harbor notice board — best beach on top, then the coast list north to south, each opening into a 3-day strip */
+:root{
+  --paper:#eef3f1; --card:#ffffff; --ink:#0f2a33; --muted:#566f75; --line:#d3dfdc;
+  --sea:#1f6f78; --buoy:#e0761f;
+  --good:#1e8a5a; --ok:#b88a12; --poor:#c2412d; --great:#0f6e8c;
+  --display:"Secular One","Arial Hebrew",system-ui,sans-serif;
+  --body:"IBM Plex Sans Hebrew","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0b1a1f; --card:#122830; --ink:#e6f0ee; --muted:#93aeb2; --line:#22414a;
+  --sea:#5cc0c8; --buoy:#f39a4c; --good:#4cc68d; --ok:#e2b743; --poor:#f07a64; --great:#5ac2e6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0b1a1f; --card:#122830; --ink:#e6f0ee; --muted:#93aeb2; --line:#22414a;
+  --sea:#5cc0c8; --buoy:#f39a4c; --good:#4cc68d; --ok:#e2b743; --poor:#f07a64; --great:#5ac2e6; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-size:30px;letter-spacing:.5px;color:var(--sea);direction:ltr}
+.brand span{color:var(--buoy)}
+.stamp{color:var(--muted);font-size:13px}
+.notice{background:color-mix(in srgb,var(--buoy) 14%,var(--card));border:1px solid color-mix(in srgb,var(--buoy) 40%,var(--line));
+  border-radius:10px;padding:10px 12px;font-size:13.5px}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.dial{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;position:relative}
+.dial b{font-family:var(--display);font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.dial small{position:absolute;bottom:14px;font-size:11px;color:var(--muted)}
+.hero h1{margin:0;font-family:var(--display);font-weight:400;font-size:22px;text-wrap:balance}
+.hero p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.eyebrow{font-size:12px;letter-spacing:.06em;color:var(--sea);font-weight:600}
+.tabs{display:flex;gap:6px}
+.tabs button{flex:1;font:inherit;font-size:14px;padding:8px 6px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--sea);border-color:var(--sea);color:var(--paper);font-weight:600}
+.tabs button:focus-visible,.row:focus-visible{outline:2px solid var(--buoy);outline-offset:2px}
+.list{display:flex;flex-direction:column;gap:8px}
+.beach{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.row{width:100%;display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;padding:12px 14px;background:none;border:0;color:inherit;font:inherit;text-align:right;cursor:pointer}
+.chip{width:52px;height:40px;border-radius:9px;display:grid;place-items:center;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums;color:#fff}
+.name{font-weight:600;font-size:16px}
+.sub{color:var(--muted);font-size:13px;min-width:0}
+.arrow{color:var(--muted);font-size:18px;transition:transform .2s}
+.beach.open .arrow{transform:rotate(180deg)}
+.detail{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+.strip{display:grid;grid-template-columns:repeat(8,1fr);gap:3px}
+.cell{border-radius:6px;padding:6px 0 4px;text-align:center;font-variant-numeric:tabular-nums;color:#fff;cursor:pointer;border:2px solid transparent;font:inherit;font-size:13px;font-weight:600}
+.cell span{display:block;font-size:10px;font-weight:400;opacity:.9}
+.cell[aria-pressed="true"]{border-color:var(--ink)}
+.why{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.why div{display:grid;grid-template-columns:70px 1fr;gap:8px}
+.why dt{color:var(--muted)}
+.why b{font-variant-numeric:tabular-nums}
+.warn{color:var(--poor);font-weight:600;font-size:13.5px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:4px;vertical-align:-1px}
+footer{color:var(--muted);font-size:12.5px;display:flex;flex-direction:column;gap:6px}
+footer a{color:var(--sea)}
+@media (prefers-reduced-motion:reduce){.arrow{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">Fish<span>Day</span></div>
+    <div class="stamp" id="stamp">טוען נתוני ים…</div>
+  </header>
+  <div class="notice" id="notice" hidden></div>
+  <section class="hero" id="hero" aria-live="polite"></section>
+  <div class="tabs" role="group" aria-label="בחירת יום" id="tabs"></div>
+  <div class="legend">
+    <span><i style="background:var(--great)"></i>מצוין 8+</span>
+    <span><i style="background:var(--good)"></i>טוב 6.5–8</span>
+    <span><i style="background:var(--ok)"></i>בינוני 4.5–6.5</span>
+    <span><i style="background:var(--poor)"></i>לא כדאי</span>
+  </div>
+  <section class="list" id="list" aria-label="חופים מצפון לדרום"></section>
+  <footer>
+    <div>הציון מחושב לדיג בחכה מהחוף, מגלים, רוח, משבים ושעות זריחה ושקיעה. הוא לא כולל זרמים, עכירות מים ולחץ ברומטרי. בגלים מעל 1.8 מ' לא עומדים על שוברי גלים.</div>
+    <div>נתוני ים ומזג אוויר: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0).</div>
+  </footer>
+</div>
+
+<script>
+const BEACHES=[
+ {n:"בת גלים",a:"חיפה",lat:32.836,lon:34.960,z:0},
+ {n:"חוף דדו",a:"חיפה",lat:32.800,lon:34.945,z:0},
+ {n:"קריית חיים",a:"מפרץ חיפה",lat:32.840,lon:35.040,z:1},
+ {n:"עתלית",a:"חוף הכרמל",lat:32.695,lon:34.925,z:2},
+ {n:"נווה ים",a:"חוף הכרמל",lat:32.675,lon:34.918,z:2},
+ {n:"הבונים – דור",a:"חוף הכרמל",lat:32.635,lon:34.912,z:2},
+ {n:"מעגן מיכאל",a:"חוף הכרמל",lat:32.560,lon:34.893,z:3}
+];
+// Snapshot taken 31.10.2026 16:42 (Israel time), 3-hour steps from 00:00. Wave height in tenths of a meter.
+const SNAP={start:"2026-10-31",taken:"2026-10-31T16:42",sst:26,
+ sr:["05:56","05:57","05:58"],ss:["16:50","16:49","16:48"],
+ z:[
+ {wh:[10,9,9,8,7,7,6,6,5,5,4,4,4,4,3,3,3,2,2,2,2,2,3,3],wp:[7,7,7,6,6,6,6,6,6,6,6,6,6,6,6,6,5,5,5,5,5,4,3,3],ws:[6,7,8,8,8,19,16,10,1,3,4,2,16,18,11,5,4,5,7,13,16,6,1,8],wg:[10,12,14,21,18,36,31,23,12,12,10,9,31,35,24,18,9,12,19,30,33,16,15,20],wd:[162,161,158,119,339,344,356,351,243,201,174,79,297,323,334,347,175,153,164,116,111,74,135,175],t:[18,17,17,23,27,24,22,21,21,19,19,24,25,24,22,22,19,18,18,24,29,30,25,23]},
+ {wh:[10,9,8,8,7,6,6,6,5,5,4,4,4,3,3,3,3,2,2,2,2,2,3,2],wp:[7,7,7,6,6,6,6,6,6,6,6,6,6,6,6,6,5,5,5,5,5,4,3,3],ws:[7,7,7,10,6,19,15,5,4,4,5,5,16,17,10,3,5,5,4,15,17,2,1,7],wg:[11,10,12,17,13,32,27,12,7,8,8,10,26,30,21,8,10,10,9,24,32,12,11,11],wd:[111,112,113,126,294,346,353,356,117,124,118,144,305,324,337,27,111,98,132,122,114,135,360,135],t:[17,16,16,23,26,24,22,21,17,17,16,23,25,24,23,21,18,17,17,24,29,30,24,22]},
+ {wh:[10,9,9,8,7,7,7,6,6,5,5,4,4,4,3,3,3,2,2,2,2,2,3,3],wp:[7,7,7,6,6,6,6,5,6,6,6,6,6,6,6,6,5,5,5,5,5,4,3,3],ws:[7,7,9,7,14,20,20,15,5,6,6,4,13,16,11,7,7,7,9,14,13,7,7,9],wg:[11,12,15,13,23,34,35,26,14,10,10,10,23,27,22,15,12,13,15,24,26,14,13,14],wd:[96,96,102,96,304,342,4,7,39,123,114,202,294,328,349,30,110,87,105,93,104,29,69,112],t:[19,19,19,23,26,24,23,22,21,19,19,23,25,24,23,22,20,20,20,25,29,30,26,24]},
+ {wh:[10,9,8,7,7,7,6,6,5,5,4,4,4,3,3,3,3,2,2,2,2,2,3,3],wp:[7,6,6,6,6,6,5,5,5,6,6,6,6,6,6,5,5,5,5,5,5,4,3,3],ws:[6,6,6,8,13,22,19,10,5,6,6,4,14,17,10,4,5,5,5,15,12,5,4,5],wg:[10,9,10,14,21,35,32,19,8,10,9,10,23,28,21,8,10,11,9,25,24,14,14,8],wd:[90,94,97,75,313,336,1,13,94,125,113,180,288,321,343,81,102,72,82,73,85,13,5,117],t:[19,19,18,23,26,24,23,22,19,18,18,22,25,24,23,21,19,19,19,24,28,30,26,22]}
+ ]};
+
+const DAYNAMES=["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
+const hm=s=>{const [h,m]=s.split(":").map(Number);return h+m/60};
+
+function waveScore(h){if(h<0.3)return 5;if(h<0.5)return 8;if(h<=1.0)return 10;if(h<=1.4)return 7;if(h<=1.9)return 4;return 1}
+function windScore(ws,dir){
+  let s=ws<12?10:ws<20?8:ws<30?5:ws<40?3:1;
+  if(isOnshore(dir)&&ws>=15)s-=1.5;
+  if(isOffshore(dir)&&ws<25)s+=0.5;
+  return Math.max(1,Math.min(10,s));
+}
+const isOnshore=d=>d>=200&&d<=340;   // from the sea (coast faces west)
+const isOffshore=d=>d>=45&&d<=135;    // from land
+function timeScore(h,sr,ss){
+  const c=h+1.5, dist=Math.min(Math.abs(c-sr),Math.abs(c-ss));
+  if(dist<=1.5)return 10; if(dist<=3)return 8; if(c>sr&&c<ss)return 4; return 5;
+}
+function score(p,sr,ss){
+  let s=0.4*waveScore(p.wh)+0.3*windScore(p.ws,p.wd)+0.3*timeScore(p.h,sr,ss);
+  if(p.wg>=40)s-=1.5;
+  if(p.wh>=2)s=Math.min(s,2);
+  return Math.round(Math.max(1,Math.min(10,s))*10)/10;
+}
+const colorOf=s=>s>=8?"var(--great)":s>=6.5?"var(--good)":s>=4.5?"var(--ok)":"var(--poor)";
+const labelOf=s=>s>=8?"מצוין":s>=6.5?"טוב":s>=4.5?"בינוני":"לא כדאי";
+function dirName(d){return["צפונית","צפון-מזרחית","מזרחית","דרום-מזרחית","דרומית","דרום-מערבית","מערבית","צפון-מערבית"][Math.round(((d%360)+360)%360/45)%8]}
+function waveText(h){if(h<0.3)return"ים שטוח, מים צלולים. הדגים זהירים יותר";if(h<0.5)return"ים רגוע עם מעט תנועה";if(h<=1.0)return"תנועת מים טובה שמערבבת מזון";if(h<=1.4)return"ים גבוה, קשה יותר להחזיק פיתיון";if(h<=1.9)return"ים סוער. דיג קשה";return"מסוכן. לא לעלות על שוברי גלים"}
+function windText(ws,d){const base=ws<12?"רוח חלשה":ws<20?"רוח מתונה":ws<30?"רוח חזקה":"רוח חזקה מאוד";
+  return `${base}, ${dirName(d)}`+(isOffshore(d)?" (מהיבשה, נוח להטלה)":isOnshore(d)&&ws>=15?" (מהים, מקשה על ההטלה)":"")}
+function timeText(h,sr,ss){const t=timeScore(h,sr,ss);return t===10?"שעת זריחה או שקיעה, הדגים פעילים":t===8?"קרוב לזריחה או לשקיעה":t===5?"לילה":"אמצע היום, פחות פעילות"}
+
+// Build per-beach 3h series: [{day,h,wh,wp,ws,wg,wd,t}]
+let DATA=null; // {start:Date-string, days:[{date,sr,ss}], series:[[...] per beach], live:boolean, taken}
+function fromSnapshot(){
+  const days=[0,1,2].map(i=>({date:addDays(SNAP.start,i),sr:hm(SNAP.sr[i]),ss:hm(SNAP.ss[i])}));
+  const series=BEACHES.map(b=>{const z=SNAP.z[b.z];return z.wh.map((_,k)=>({day:Math.floor(k/8),h:(k%8)*3,wh:z.wh[k]/10,wp:z.wp[k],ws:z.ws[k],wg:z.wg[k],wd:z.wd[k],t:z.t[k]}))});
+  return {days,series,live:false,taken:SNAP.taken};
+}
+function addDays(iso,n){const d=new Date(iso+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+async function fromLive(){
+  const lat=BEACHES.map(b=>b.lat).join(","),lon=BEACHES.map(b=>b.lon).join(",");
+  const q=`latitude=${lat}&longitude=${lon}&timezone=Asia%2FJerusalem&forecast_days=3`;
+  const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),8000);
+  try{
+    const [m,w]=await Promise.all([
+      fetch(`https://marine-api.open-meteo.com/v1/marine?${q}&hourly=wave_height,wave_period,sea_surface_temperature`,{signal:ctl.signal}).then(r=>r.json()),
+      fetch(`https://api.open-meteo.com/v1/forecast?${q}&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m&daily=sunrise,sunset`,{signal:ctl.signal}).then(r=>r.json())]);
+    const M=[].concat(m),W=[].concat(w);
+    const time=M[0].hourly.time;
+    const days=W[0].daily.time.map((d,i)=>({date:d,sr:hm(W[0].daily.sunrise[i].slice(11)),ss:hm(W[0].daily.sunset[i].slice(11))}));
+    const series=BEACHES.map((_,i)=>{const out=[];for(let k=0;k<time.length;k+=3){const g=a=>a[k]??a[k+1]??0;
+      out.push({day:Math.floor(k/24),h:k%24,wh:g(M[i].hourly.wave_height),wp:g(M[i].hourly.wave_period),ws:g(W[i].hourly.wind_speed_10m),wg:g(W[i].hourly.wind_gusts_10m),wd:g(W[i].hourly.wind_direction_10m),t:g(W[i].hourly.temperature_2m)})}return out});
+    SNAP.sst=Math.round(M[3].hourly.sea_surface_temperature?.[12]??SNAP.sst);
+    return {days,series,live:true,taken:new Date().toISOString()};
+  }finally{clearTimeout(timer)}
+}
+
+// ---------- render ----------
+let dayIdx=0, openBeach=3, slotSel={};
+function israelNow(){const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jerusalem",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",hour12:false}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t).value;return{date:`${g("year")}-${g("month")}-${g("day")}`,h:+g("hour")%24}}
+function dayLabel(i){const d=new Date(DATA.days[i].date+"T12:00:00Z");const dd=d.getUTCDate()+"."+(d.getUTCMonth()+1);
+  const today=israelNow().date;const rel=DATA.days[i].date===today?"היום":DATA.days[i].date===addDays(today,1)?"מחר":"יום "+DAYNAMES[d.getUTCDay()];return {rel,dd}}
+function scored(bi,di){const d=DATA.days[di];return DATA.series[bi].filter(p=>p.day===di).map(p=>({...p,s:score(p,d.sr,d.ss)}))}
+function bestOf(arr){return arr.reduce((a,b)=>b.s>a.s?b:a)}
+const slotTxt=h=>`${String(h).padStart(2,"0")}:00–${String((h+3)%24).padStart(2,"0")}:00`;
+
+function render(){
+  const now=israelNow();
+  // drop past slots from "today"
+  const isToday=DATA.days[dayIdx].date===now.date;
+  const ranked=BEACHES.map((b,i)=>{let s=scored(i,dayIdx);const future=isToday?s.filter(p=>p.h+3>now.h):s;return{b,i,all:s,best:bestOf(future.length?future:s)}});
+  const top=ranked.reduce((a,b)=>b.best.s>a.best.s?b:a);
+  const lab=dayLabel(dayIdx);
+  document.getElementById("hero").innerHTML=`
+    <div class="dial" style="background:conic-gradient(${colorOf(top.best.s)} ${top.best.s*36}deg,var(--line) 0)"><div style="position:absolute;inset:9px;border-radius:50%;background:var(--card)"></div><b style="position:relative">${top.best.s.toFixed(1)}</b><small>מתוך 10</small></div>
+    <div><div class="eyebrow">החוף הכי טוב ${lab.rel}</div><h1>${top.b.n}, ${slotTxt(top.best.h)}</h1>
+    <p>${labelOf(top.best.s)}. גלים ${top.best.wh.toFixed(1)} מ', רוח ${Math.round(top.best.ws)} קמ"ש. מים ${SNAP.sst}°.</p></div>`;
+  document.getElementById("tabs").innerHTML=DATA.days.map((_,i)=>{const l=dayLabel(i);return`<button type="button" id="tab${i}" aria-pressed="${i===dayIdx}" data-day="${i}">${l.rel} <small>${l.dd}</small></button>`}).join("");
+  document.getElementById("list").innerHTML=ranked.map(({b,i,all,best})=>{
+    const open=i===openBeach; const sel=slotSel[i+"-"+dayIdx]??best.h; const p=all.find(x=>x.h===sel)||best; const d=DATA.days[dayIdx];
+    const warn=all.some(x=>x.wh>=1.8)?"גלים מעל 1.8 מ' ביום הזה. לא לעלות על שוברי גלים.":all.some(x=>x.wg>=40)?"משבי רוח מעל 40 קמ\"ש ביום הזה.":"";
+    return `<article class="beach${open?" open":""}">
+      <button class="row" type="button" id="row${i}" data-beach="${i}" aria-expanded="${open}">
+        <span class="chip" style="background:${colorOf(best.s)}">${best.s.toFixed(1)}</span>
+        <span style="min-width:0"><span class="name">${b.n}</span><br><span class="sub">${b.a} · הכי טוב ${slotTxt(best.h)}</span></span>
+        <span class="arrow" aria-hidden="true">⌄</span></button>
+      ${open?`<div class="detail">
+        <div class="strip" role="group" aria-label="ציון לפי שעות">${all.map(x=>`<button type="button" class="cell" id="c${i}-${x.h}" data-beach="${i}" data-h="${x.h}" aria-pressed="${x.h===p.h}" style="background:${colorOf(x.s)}">${x.s.toFixed(0)}<span>${String(x.h).padStart(2,"0")}</span></button>`).join("")}</div>
+        <dl class="why" style="margin:0">
+          <div><dt>שעות</dt><dd style="margin:0"><b>${slotTxt(p.h)}</b> · ${labelOf(p.s)} (${p.s.toFixed(1)})</dd></div>
+          <div><dt>גלים</dt><dd style="margin:0"><b>${p.wh.toFixed(1)} מ'</b>, מחזור ${Math.round(p.wp)} שנ'. ${waveText(p.wh)}</dd></div>
+          <div><dt>רוח</dt><dd style="margin:0"><b>${Math.round(p.ws)} קמ"ש</b>, משבים ${Math.round(p.wg)}. ${windText(p.ws,p.wd)}</dd></div>
+          <div><dt>זמן</dt><dd style="margin:0">${timeText(p.h,d.sr,d.ss)}. זריחה ${fmt(d.sr)}, שקיעה ${fmt(d.ss)}</dd></div>
+          <div><dt>אוויר</dt><dd style="margin:0"><b>${Math.round(p.t)}°</b> · מים ${SNAP.sst}°</dd></div>
+        </dl>${warn?`<div class="warn">${warn}</div>`:""}
+      </div>`:""}</article>`}).join("");
+}
+const fmt=h=>`${String(Math.floor(h)).padStart(2,"0")}:${String(Math.round((h%1)*60)).padStart(2,"0")}`;
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-day],[data-beach]"); if(!t)return;
+  if(t.dataset.day!=null){dayIdx=+t.dataset.day;render();return}
+  if(t.dataset.h!=null){slotSel[t.dataset.beach+"-"+dayIdx]=+t.dataset.h;render();document.getElementById(`c${t.dataset.beach}-${t.dataset.h}`)?.focus();return}
+  const i=+t.dataset.beach; openBeach=openBeach===i?-1:i; render(); document.getElementById("row"+i)?.focus();
+});
+
+function setStamp(){
+  const d=new Date(DATA.taken);const s=new Intl.DateTimeFormat("he-IL",{timeZone:"Asia/Jerusalem",day:"numeric",month:"numeric",hour:"2-digit",minute:"2-digit"}).format(d);
+  document.getElementById("stamp").textContent=(DATA.live?"נתונים חיים · ":"עודכן ")+s;
+  const n=document.getElementById("notice");
+  if(!DATA.live){
+    const now=israelNow().date; const idx=DATA.days.findIndex(x=>x.date===now);
+    if(idx<0){n.hidden=false;n.textContent="התחזית בעמוד הזה ישנה. בגרסה הבאה הנתונים יתעדכנו לבד.";}
+    else{dayIdx=idx;n.hidden=false;n.textContent="גרסת הדגמה: תמונת מצב של נתוני הים מ-"+s+". בגרסה שתעלה לאינטרנט הנתונים יתעדכנו כל שעה.";}
+  }
+}
+DATA=fromSnapshot();setStamp();render();
+fromLive().then(d=>{DATA=d;dayIdx=0;setStamp();document.getElementById("notice").hidden=true;render()}).catch(()=>{});
+</script>
