@@ -77,20 +77,28 @@ export function Rules({ now }: { now: LocalNow }) {
         </ul>
       </Rule>
 
-      <Rule title={`תקופת הרבייה ${BREEDING_SEASON.year}`} sources={[SOURCES.season, SOURCES.seasonParks]}>
+      <Rule title="מה תופסים מהחוף בישראל" sources={[SOURCES.catchStudy]}>
+        <p>בסקר שפורסם ב-2023 הדגים הנפוצים בחכה מהחוף היו סילגו (48% מהדגים), סיכן משויש (13%) וסרגוס מסורטט (12%). במשקל הובילו הקיפונים.</p>
+        <p>שיא השלל מהחוף הוא בסתיו (אוקטובר–נובמבר) ובחורף (דצמבר–פברואר).</p>
+      </Rule>
+
+      <Rule title={`תקופת הרבייה ${BREEDING_SEASON.year}`} sources={[SOURCES.season, SOURCES.seasonParks, SOURCES.rationale]}>
         <p><strong>{shortDate(BREEDING_SEASON.start)}–{shortDate(BREEDING_SEASON.end)}.</strong> {STATE_TEXT[state]}</p>
         <p>חכה מהחוף בלי אמצעי עזר מותרת, באזורים שמותר לדוג בהם. רחפן מהחוף אסור בכל התקופה.</p>
-        <p>רט"ג מפרסמת שהדגים האלה אסורים לדיג בכל התקופה, בכל השיטות:</p>
+        <p>הדגים האלה אסורים בכל התקופה ובכל השיטות, כולל חכה מהחוף. תפסת? מחזירים למים:</p>
         <ul class="plain">{BREEDING_BANNED.map((f) => <li key={f}>{f}</li>)}</ul>
       </Rule>
 
-      <Rule title="אסור תמיד" sources={[SOURCES.protected, SOURCES.sizes, SOURCES.booklet]}>
+      <Rule title="אסור תמיד" sources={[SOURCES.protected, SOURCES.sizes, SOURCES.booklet, SOURCES.protectedLaw]}>
         <ul class="plain">{PROTECTED.map((f) => <li key={f}>{f}</li>)}</ul>
         <p>גם "דיג חטיפה" אסור: חכה עם קרס עוגן שנועד לתפוס את הדג בגופו.</p>
       </Rule>
 
-      <Rule title="שמורות ימיות" sources={[SOURCES.booklet, SOURCES.reservesMap, SOURCES.roshCarmel]}>
+      <Rule title="שמורות ואזורים אסורים" sources={[SOURCES.booklet, SOURCES.reservesMap, SOURCES.roshCarmel, SOURCES.reservesList, SOURCES.regulations]}>
         <p>דיג בשמורה אסור. חכה מהחוף מותרת רק היכן שתקנון השמורה מתיר.</p>
+        <p><strong>שקמונה:</strong> ממכון חקר ימים עד מסעדת מקסים. מותרת רק חכה מהחוף. לא לשהות בשמורה בחושך.</p>
+        <p><strong>ראש כרמל:</strong> מתחילה קילומטר מהחוף, והדיג בה אסור לגמרי.</p>
+        <p><strong>נמל חיפה:</strong> אסור לדוג על שוברי הגלים הראשיים והצדדיים או בתוכם.</p>
         <ul class="plain">
           {BEACHES.filter((b) => b.legalNote).map((b) => (
             <li key={b.id}><strong>{b.name}:</strong> {b.legalNote}</li>

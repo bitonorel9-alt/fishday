@@ -59,7 +59,7 @@ export function Star({ on, label, onToggle }: { on: boolean; label: string; onTo
 
 export function LegalTag({ beach }: { beach: Beach }) {
   if (beach.legal === "reserve") return <span class="tag tag-alert">שמורה</span>;
-  return beach.legalNote ? <span class="tag">בדוק גבולות</span> : null;
+  return beach.legal === "near" ? <span class="tag">ליד שמורה</span> : null;
 }
 
 function Spark({ hours, now }: { hours: ScoredHour[]; now: LocalNow }) {

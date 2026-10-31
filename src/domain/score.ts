@@ -39,11 +39,19 @@ export function angleDiff(a: number, b: number): number {
   return d > 180 ? 360 - d : d;
 }
 
-/** גובה הגל שמגיע לחוף, לפי הזווית בין כיוון הגל לכיוון שהחוף פונה אליו. */
+/** כמה גל עובר כשיבשה חוסמת את הכיוון. הערכה, עד שיהיו נתוני שטח. */
+const SHELTER_FACTOR = 0.4;
+
+function isSheltered(direction: number, beach: Beach): boolean {
+  const sector = beach.shelteredFrom;
+  return sector !== undefined && direction >= sector[0] && direction <= sector[1];
+}
+
+/** גובה הגל שמגיע לחוף, לפי הזווית בין כיוון הגל לכיוון שהחוף פונה אליו, ולפי מחסה של יבשה. */
 export function effectiveWave(height: number, direction: number, beach: Beach): number {
   const angle = (angleDiff(direction, beach.facing) * Math.PI) / 180;
   const alignment = Math.max(Math.cos(angle), 0.3);
-  return height * alignment * beach.exposure;
+  return height * alignment * (isSheltered(direction, beach) ? SHELTER_FACTOR : 1);
 }
 
 export function waveScore(h: number): number {

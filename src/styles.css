@@ -224,6 +224,7 @@ main {
 .factors-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .factors dl { display: grid; grid-template-columns: 54px 1fr; gap: 8px 10px; font-size: 15px; }
 .factors dt { color: var(--muted); }
+.shore { display: flex; flex-direction: column; gap: 4px; }
 .sky { display: flex; justify-content: space-between; gap: 12px; }
 .sky div { display: flex; flex-direction: column; }
 

@@ -38,7 +38,11 @@ describe("periodAdjustment", () => {
 });
 
 describe("effectiveWave", () => {
-  it("גל ישר לחוף חשוף נשאר כמו שהוא", () => expect(effectiveWave(1, 280, dado)).toBeCloseTo(1));
+  it("גל ישר לחוף חשוף נשאר כמו שהוא", () => expect(effectiveWave(1, 270, dado)).toBeCloseTo(1));
+  it("יבשה חוסמת גל דרום-מערבי במפרץ", () => {
+    const bay = beach("kiryat-haim");
+    expect(effectiveWave(1, 240, bay)).toBeLessThan(effectiveWave(1, 300, bay) / 2);
+  });
   it("אותו גל קטן יותר בחוף שפונה לכיוון אחר", () => {
     expect(effectiveWave(1, 230, batGalim)).toBeLessThan(effectiveWave(1, 230, dado));
   });

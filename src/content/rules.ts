@@ -15,6 +15,11 @@ export const SOURCES = {
   protected: { label: "רט\"ג: מינים מוגנים ושמורות", url: "https://www.parks.org.il/article/%D7%AA%D7%96%D7%9B%D7%95%D7%A8%D7%AA-%D7%A9%D7%9E%D7%95%D7%A8%D7%95%D7%AA-%D7%98%D7%91%D7%A2-%D7%99%D7%9E%D7%99%D7%95%D7%AA-%D7%95%D7%A2%D7%A8%D7%9B%D7%99-%D7%98%D7%91%D7%A2-%D7%9E%D7%95/", updated: "23.10.2017" },
   reservesMap: { label: "רט\"ג: עלון שמורות בצפון", url: "https://static.parks.org.il/wp-content/uploads/2023/06/yam-north.pdf", updated: "2023" },
   roshCarmel: { label: "רט\"ג: הודעה על ראש כרמל", url: "https://static.parks.org.il/wp-content/uploads/2022/11/%D7%A2%D7%91%D7%A8%D7%99%D7%AA-%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%99%D7%9E%D7%99%D7%AA-%D7%A8%D7%90%D7%A9-%D7%9B%D7%A8%D7%9E%D7%9C-%D7%94%D7%95%D7%93%D7%A2%D7%94-%D7%9C%D7%A6%D7%99%D7%91%D7%95%D7%A8-2024.pdf", updated: "2024" },
+  reservesList: { label: "החצי הכחול: שמורות מוכרזות", url: "https://mafish.org.il/marine-reserves/existing-reserves/", updated: "ללא תאריך באתר" },
+  regulations: { label: "תקנות הדיג 1937, תקנה 8", url: "https://www.gov.il/BlobFolder/legalinfo/fishing_regulations_2025/he/fishing_regulations.pdf", updated: "נוסח 2025" },
+  protectedLaw: { label: "אכרזת ערכי טבע מוגנים", url: "https://www.nevo.co.il/law_html/law01/999_395.htm", updated: "תיקון 2022" },
+  rationale: { label: "אגף הדיג: נימוקים לעונת 2026", url: "https://www.gov.il/BlobFolder/reports/fishing_mediterranean_2026/ar/%D7%9E%D7%A1%D7%9E%D7%9A%20%D7%A0%D7%99%D7%9E%D7%95%D7%A7%D7%99%D7%9D%20%D7%9C%D7%A2%D7%95%D7%A0%D7%AA%20%D7%94%D7%A8%D7%91%D7%99%D7%99%D7%94%20%D7%9C%D7%A9%D7%A0%D7%AA%202026.pdf", updated: "2026" },
+  catchStudy: { label: "Frid et al., Fishes 2023", url: "https://doi.org/10.3390/fishes8020069", updated: "2023" },
 } satisfies Record<string, Source>;
 
 export interface Season {
@@ -82,7 +87,7 @@ export const SEA_FISH: Fish[] = [
   ...row(30, [["כסף", "צינון אמריקאי"], ["פלמידה לבנה", "סקומברן זריז"]]),
   ...row(40, [
     ["מוסר", "מוסר מלכותי"],
-    ["דאור", "דקר הסלעים", "הוכרז כמוגן ב-2021 לשנה אחת. לא מצאתי הארכה. בספק, להחזיר למים."],
+    ["דאור", "דקר הסלעים", "ההגנה הזמנית פגה ב-2023 לפי נוסח האכרזה. אסור בתקופת הרבייה."],
     ["ארדי", "דוקרנית אדומה"], ["לוקוס", "דקר המכמורת"],
   ]),
   ...row(70, [["טונה", "טונה כחולת סנפיר"]]),

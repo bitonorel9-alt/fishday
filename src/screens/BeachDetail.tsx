@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import type { Forecast } from "../data/forecast";
-import type { Beach } from "../domain/beaches";
+import { BOTTOM_LABEL, LIKELY_FISH, type Beach } from "../domain/beaches";
 import { hourAt, type ScoredHour } from "../domain/insights";
 import { moonPhase } from "../domain/moon";
 import { GUST_WARNING_KMH, WAVE_WARNING_M } from "../domain/score";
@@ -121,6 +121,11 @@ export function BeachDetail({ beach, hours, forecast, now, favorite, onToggleFav
           </>
         )}
         <div><span class="muted small">ירח</span><strong>{moon.name}</strong></div>
+      </section>
+
+      <section class="card shore">
+        <p><strong>החוף.</strong> {beach.shore}</p>
+        <p class="muted small">קרקעית: {BOTTOM_LABEL[beach.bottom]}. דגים אפשריים לפי סוג החוף: {LIKELY_FISH[beach.bottom]}.</p>
       </section>
 
       <p class="muted small">הציון הוא הערכה לדיג בחכה מהחוף. הוא לא כולל זרמים, עכירות ולחץ ברומטרי.</p>
