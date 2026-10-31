@@ -158,7 +158,7 @@ main {
   flex-direction: column;
   justify-content: flex-end;
   aspect-ratio: 819 / 1456;
-  max-height: 900px;
+  max-height: min(900px, 86vh);
   width: calc(100% + var(--gutter) * 2);
   margin: -66px calc(var(--gutter) * -1) 0;
   padding-bottom: 46px;
