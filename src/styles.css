@@ -224,17 +224,23 @@ main {
 .badge[data-tier] { background: var(--tier); color: var(--on-tier); box-shadow: 0 0 22px -4px var(--tier); }
 
 /* גיבור: התמונה מעתלית על כל הרוחב */
+.dive {
+  height: 205svh;
+  width: calc(100% + var(--gutter) * 2);
+  /* התוכן הבא עולה מעל המים, כדי שלא יהיה קטע ריק בסוף הצלילה. */
+  margin: -66px calc(var(--gutter) * -1) -78svh;
+}
+.dive ~ * { position: relative; z-index: 1; }
+.dive-shark { position: absolute; left: 0; top: 30%; width: 250px; height: 115px; fill: var(--sprite); animation: swim-left 26s linear infinite; }
 .hero {
-  position: relative;
+  position: sticky;
+  top: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  aspect-ratio: 819 / 1456;
-  max-height: min(900px, 86vh);
-  width: calc(100% + var(--gutter) * 2);
-  margin: -66px calc(var(--gutter) * -1) 0;
-  padding-bottom: 46px;
+  height: 100svh;
+  padding-bottom: calc(var(--tab-h) + 62px + env(safe-area-inset-bottom));
   background: #0a0f22;
   color: #fff;
 }
@@ -244,28 +250,70 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 62%;
+  object-position: 40% 62%;
+  transform-origin: 62% 66%;
 }
 /* הילה שנושמת סביב השמש שבתמונה */
 .hero-sun {
   position: absolute;
-  left: 80%;
-  top: 52.500%;
+  left: 88.800%;
+  top: 53%;
   width: 220px;
   height: 220px;
   margin: -110px 0 0 -110px;
+  mix-blend-mode: screen;
+}
+.hero-sun::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
   background: radial-gradient(circle, rgb(255 190 90 / 70%), rgb(255 140 60 / 22%) 38%, transparent 68%);
-  mix-blend-mode: screen;
   animation: breathe 6s ease-in-out infinite;
 }
 .hero::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgb(10 15 34 / 30%), transparent 14%, transparent 58%, rgb(10 15 34 / 62%) 70%, rgb(10 15 34 / 88%));
+  background: linear-gradient(180deg, rgb(10 15 34 / 30%), transparent 14%, transparent 52%, rgb(10 15 34 / 62%) 66%, rgb(10 15 34 / 88%));
 }
-.hero-content { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 8px; padding: 0 var(--gutter); }
+/* המים שעולים ומכסים את המסך בזמן הגלילה */
+.dive-water { position: absolute; inset: 0 0 auto; z-index: 1; height: 135%; transform: translate3d(0, 66%, 0); will-change: transform; }
+.dive-fill { position: absolute; inset: 71px 0 0; overflow: hidden; background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 82%, #19c3d1), var(--bg) 26%); }
+.dive-fill i { position: absolute; bottom: -20px; width: 10px; height: 10px; border-radius: 50%; border: 1.500px solid rgb(255 255 255 / 45%); animation: rise 9s linear infinite; }
+.dive-fill i:nth-child(1) { left: 14%; animation-delay: -2s; }
+.dive-fill i:nth-child(2) { left: 33%; width: 6px; height: 6px; animation-delay: -6s; animation-duration: 7s; }
+.dive-fill i:nth-child(3) { left: 52%; width: 14px; height: 14px; animation-delay: -4s; }
+.dive-fill i:nth-child(4) { left: 71%; width: 7px; height: 7px; animation-delay: -1s; animation-duration: 11s; }
+.dive-fill i:nth-child(5) { left: 88%; animation-delay: -7s; animation-duration: 8s; }
+.dive-hint {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--tab-h) + 24px + env(safe-area-inset-bottom));
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 99px;
+  background: none;
+  color: #fff;
+  font-size: 13.500px;
+  font-weight: 500;
+  transform: translateX(-50%);
+  cursor: pointer;
+}
+.dive-hint svg { animation: nudge 1.800s ease-in-out infinite; }
+@keyframes nudge { 50% { transform: translateY(4px); } }
+
+.hero-content { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 8px; padding: 0 var(--gutter); will-change: transform, opacity; }
+
+@media (min-width: 640px) {
+  .hero-photo { object-position: 50% 62%; }
+  .hero-sun { left: 80%; top: 51%; }
+}
 .hero-eyebrow { font-size: 14px; font-weight: 600; color: #ffd9a0; }
 .hero-main { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
 .hero h1 { font: 700 60px/.92 var(--display); text-wrap: balance; text-shadow: 0 2px 24px rgb(10 15 34 / 60%); }
@@ -287,10 +335,28 @@ main {
 .sun-arc-labels b { font-weight: 600; color: #fff; }
 .sun-next { color: #ffd9a0; }
 
-.waves { position: absolute; inset: auto 0 -1px; z-index: 1; height: 72px; overflow: hidden; pointer-events: none; }
+.waves { position: absolute; inset: 0 0 auto; height: 72px; overflow: hidden; pointer-events: none; }
 .wave { position: absolute; bottom: 0; left: 0; width: 200%; height: 100%; animation: roll 16s linear infinite; }
-.wave-back { fill: #ff8a3c; opacity: 0.45; animation-duration: 24s; animation-direction: reverse; }
-.wave-front { fill: var(--bg); }
+.wave-back { fill: #19c3d1; opacity: 0.5; animation-duration: 24s; animation-direction: reverse; }
+.wave-front { fill: color-mix(in srgb, var(--bg) 82%, #19c3d1); }
+
+/* דג שקופץ מהמגע */
+.tap-fish { position: fixed; z-index: 50; width: 0; height: 0; pointer-events: none; }
+.tap-fish span { position: absolute; left: -17px; top: -11px; display: block; width: 34px; height: 21px; animation: fish-hop 0.760s cubic-bezier(0.3, 0.6, 0.5, 1) forwards; }
+.tap-fish svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgb(5 33 58 / 35%)); }
+.tap-ring { position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #19c3d1; opacity: 0; animation: tap-ring 0.620s ease-out forwards; }
+.tap-ring-2 { animation-delay: 0.100s; }
+@keyframes fish-hop {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(calc(var(--dir) * -55deg)) scaleX(var(--flip)) scale(0.5); }
+  18% { opacity: 1; }
+  50% { transform: translate3d(calc(var(--dir) * 26px), -74px, 0) rotate(0deg) scaleX(var(--flip)); }
+  82% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(calc(var(--dir) * 54px), -8px, 0) rotate(calc(var(--dir) * 65deg)) scaleX(var(--flip)) scale(0.8); }
+}
+@keyframes tap-ring {
+  0% { opacity: 0.8; transform: scale(0.3); }
+  100% { opacity: 0; transform: scale(1.8); }
+}
 
 @keyframes roll { to { transform: translate3d(-50%, 0, 0); } }
 @keyframes breathe { 50% { opacity: 0.72; } }
@@ -407,6 +473,17 @@ main {
 .match-mine i { background: linear-gradient(90deg, #ffb23e, #f2545b); }
 .rule h3 { margin: 6px 0 0; font: 700 22px/1.1 var(--display); }
 
+/* מדריך */
+.guide-fish { display: flex; flex-direction: column; padding: 0; overflow: hidden; text-decoration: none; }
+.guide-fish img { display: block; width: 100%; height: 150px; object-fit: cover; }
+.guide-fish > span { display: flex; flex-direction: column; padding: 10px 16px 14px; }
+.guide-fish strong { font: 700 32px/1.1 var(--display); }
+.guide-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.guide-list a { display: flex; flex-direction: column; gap: 2px; height: 100%; min-height: 104px; text-decoration: none; }
+.guide-list strong { font: 700 26px/1.08 var(--display); }
+.guide-promo { display: flex; flex-direction: column; text-decoration: none; }
+.guide-promo strong { font: 700 28px/1.1 var(--display); }
+
 /* הגדרות */
 .setting { display: flex; flex-direction: column; gap: 6px; padding-block: 6px; }
 .setting-row { flex-direction: row; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
@@ -516,6 +593,10 @@ main {
 .skeleton { height: 70px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-sun, .hero-score, .sun-glow, .wave, .swim, .jelly, .bubble { animation: none; }
+  .hero-sun::after, .hero-score, .sun-glow, .wave, .swim, .jelly, .bubble, .dive-fill i, .dive-hint svg { animation: none; }
+  .dive { height: 100svh; margin-bottom: 0; }
+  .dive-shark { display: none; }
+  .dive-hint { display: none; }
+  .hero { position: relative; }
   .swim { left: 12%; }
 }

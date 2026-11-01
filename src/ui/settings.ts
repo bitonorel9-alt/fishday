@@ -13,6 +13,7 @@ export interface Settings {
   homeBeach: string | null;
   oceanSound: boolean;
   clickSounds: boolean;
+  tapFish: boolean;
   volume: number;
 }
 
@@ -24,6 +25,7 @@ export const DEFAULT_SETTINGS: Settings = {
   homeBeach: null,
   oceanSound: false,
   clickSounds: true,
+  tapFish: true,
   volume: 0.6,
 };
 

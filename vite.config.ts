@@ -31,6 +31,13 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,webp,woff2}"],
         globIgnores: ["widget/**"],
+        runtimeCaching: [
+          {
+            urlPattern: /\/sound\/.*\.m4a$/,
+            handler: "CacheFirst",
+            options: { cacheName: "sound", cacheableResponse: { statuses: [200] } },
+          },
+        ],
         // גרסה חדשה נכנסת מיד: מידע על חוקים לא יכול להישאר ישן.
         skipWaiting: true,
         clientsClaim: true,

@@ -1,7 +1,9 @@
 import type { ComponentChildren } from "preact";
+import { useEffect, useRef } from "preact/hooks";
 import { dayProgress } from "../domain/sky";
 import type { Sun } from "../domain/score";
 import { formatHour } from "../domain/time";
+import { SHARK } from "./Underwater";
 
 const PHOTO = `${import.meta.env.BASE_URL}atlit-sunset.webp`;
 
@@ -24,14 +26,81 @@ function Waves({ height }: { height: number | null }) {
   );
 }
 
+const smooth = (p: number) => p * p * (3 - 2 * p);
+
+/** הצלילה: הגלילה מניעה רק transform ו-opacity, כדי שהתנועה תישאר חלקה. */
+function useDive() {
+  const wrap = useRef<HTMLDivElement>(null);
+  const photo = useRef<HTMLImageElement>(null);
+  const sun = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+  const water = useRef<HTMLDivElement>(null);
+  const hint = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let distance = 1;
+    let queued = false;
+    const paint = () => {
+      queued = false;
+      const p = Math.min(1, Math.max(0, window.scrollY / distance));
+      const e = smooth(p);
+      if (photo.current) photo.current.style.transform = `translate3d(0,0,0) scale(${(1 + e * 0.9).toFixed(4)})`;
+      if (sun.current) sun.current.style.opacity = String(Math.max(0, 1 - p * 3));
+      if (content.current) {
+        content.current.style.opacity = String(Math.max(0, 1 - p * 2.6));
+        content.current.style.transform = `translate3d(0,${(-70 * p).toFixed(1)}px,0)`;
+      }
+      if (water.current) water.current.style.transform = `translate3d(0,${(66 - 84 * e).toFixed(2)}%,0)`;
+      if (hint.current) hint.current.style.opacity = String(Math.max(0, 1 - p * 7));
+    };
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(paint);
+    };
+    const measure = () => {
+      const el = wrap.current;
+      distance = el ? Math.max(1, el.offsetHeight - window.innerHeight) : 1;
+      onScroll();
+    };
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
+  return { wrap, photo, sun, content, water, hint };
+}
+
 export function Hero({ waveHeight, children }: { waveHeight: number | null; children: ComponentChildren }) {
+  const { wrap, photo, sun, content, water, hint } = useDive();
+  const dive = () => {
+    const el = wrap.current;
+    if (el) window.scrollTo({ top: el.offsetHeight - window.innerHeight, behavior: "smooth" });
+  };
   return (
-    <section class="hero">
-      <img class="hero-photo" src={PHOTO} alt="שקיעה בחוף עתלית, עם המבצר והמזח" width="819" height="1456" fetchpriority="high" decoding="async" />
-      <div class="hero-sun" aria-hidden="true" />
-      <div class="hero-content">{children}</div>
-      <Waves height={waveHeight} />
-    </section>
+    <div class="dive" ref={wrap}>
+      <section class="hero">
+        <img ref={photo} class="hero-photo" src={PHOTO} alt="שקיעה בחוף עתלית, עם המבצר והמזח" width="819" height="1456" fetchpriority="high" decoding="sync" />
+        <div ref={sun} class="hero-sun" aria-hidden="true" />
+        <div ref={water} class="dive-water" aria-hidden="true">
+          <Waves height={waveHeight} />
+          <div class="dive-fill">
+            <svg class="dive-shark" viewBox="0 0 200 92"><path d={SHARK} /></svg>
+            <i /><i /><i /><i /><i />
+          </div>
+        </div>
+        <div ref={content} class="hero-content">{children}</div>
+        <button ref={hint} type="button" class="dive-hint" onClick={dive} aria-label="צלילה אל התוכן">
+          <span>גלול לצלילה</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+        </button>
+      </section>
+    </div>
   );
 }
 

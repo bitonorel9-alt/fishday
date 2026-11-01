@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { FISH } from "./content/fish";
+import { GUIDE } from "./content/guide";
 import { useForecast } from "./data/useForecast";
 import { BEACHES } from "./domain/beaches";
 import { scoreForecast } from "./domain/insights";
@@ -8,6 +9,7 @@ import { addDays, israelClock, israelNow } from "./domain/time";
 import { Beaches } from "./screens/Beaches";
 import { BeachDetail } from "./screens/BeachDetail";
 import { FishDetail, FishList } from "./screens/Fish";
+import { GuideArticleView, GuideHome } from "./screens/Guide";
 import { Home } from "./screens/Home";
 import { Log } from "./screens/Log";
 import { Rules } from "./screens/Rules";
@@ -18,13 +20,14 @@ import { Hero } from "./ui/Hero";
 import { Icon, Logo } from "./ui/parts";
 import { useSettings, type Settings as AppSettings } from "./ui/settings";
 import { clickSound, startOcean, stopOcean } from "./ui/sound";
+import { jumpFish } from "./ui/tapFish";
 import { Underwater } from "./ui/Underwater";
 import { useFavorites } from "./ui/useFavorites";
 
 const TABS = [
   { href: "#/", label: "בית", icon: "home" },
   { href: "#/beaches", label: "חופים", icon: "beaches" },
-  { href: "#/fish", label: "דגים", icon: "fish" },
+  { href: "#/guide", label: "מדריך", icon: "fish" },
   { href: "#/rules", label: "מה מותר", icon: "rules" },
   { href: "#/log", label: "יומן", icon: "log" },
 ] as const;
@@ -45,10 +48,11 @@ function useRoute() {
 /** תקתוק ללחיצות, והפעלת רעש הים בלחיצה הראשונה: דפדפן לא מנגן בלי מגע. */
 function useSoundEffects(settings: AppSettings) {
   useEffect(() => {
-    const onPointer = (e: Event) => {
+    const onPointer = (e: PointerEvent) => {
       if (settings.oceanSound) startOcean(settings.volume);
-      const inControl = (e.target as Element | null)?.closest("a, button, input, select");
-      if (settings.clickSounds && inControl) clickSound(settings.volume);
+      const target = e.target as Element | null;
+      if (settings.clickSounds && target?.closest("a, button, input, select")) clickSound(settings.volume);
+      if (settings.tapFish && !target?.closest("input, select")) jumpFish(e.clientX, e.clientY);
     };
     const onVisibility = () => {
       if (document.visibilityState === "hidden") stopOcean();
@@ -59,7 +63,7 @@ function useSoundEffects(settings: AppSettings) {
       document.removeEventListener("pointerup", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [settings.oceanSound, settings.clickSounds, settings.volume]);
+  }, [settings.oceanSound, settings.clickSounds, settings.tapFish, settings.volume]);
 }
 
 function useClock() {
@@ -90,6 +94,7 @@ export function App() {
   const phase = todaySun ? skyPhase(clock, todaySun) : "golden";
   const fishId = hash.startsWith("#/fish/") ? hash.slice("#/fish/".length) : null;
   const fish = FISH.find((f) => f.id === fishId);
+  const article = GUIDE.find((a) => hash === `#/guide/${a.id}`);
   const overHero = hash === "#/";
 
   useEffect(() => {
@@ -103,6 +108,8 @@ export function App() {
   else if (hash === "#/log") screen = <Log now={now} />;
   else if (fish) screen = <FishDetail fish={fish} month={Number(now.date.slice(5, 7))} />;
   else if (hash.startsWith("#/fish")) screen = <FishList />;
+  else if (article) screen = <GuideArticleView article={article} />;
+  else if (hash.startsWith("#/guide")) screen = <GuideHome />;
   else if (!forecast || !scored) {
     screen = status === "failed" ? (
       <div class="empty">
@@ -153,7 +160,7 @@ export function App() {
       <main>{screen}</main>
       <nav class="tabbar" aria-label="ניווט ראשי">
         {TABS.map((t) => {
-          const active = t.href === "#/" ? hash === "#/" : t.href === "#/beaches" ? hash === t.href || beachId !== null : hash.startsWith(t.href);
+          const active = t.href === "#/" ? hash === "#/" : t.href === "#/beaches" ? hash === t.href || beachId !== null : t.href === "#/guide" ? hash.startsWith("#/guide") || hash.startsWith("#/fish") : hash.startsWith(t.href);
           return (
             <a key={t.href} href={t.href} aria-current={active ? "page" : undefined}>
               <Icon name={t.icon} />

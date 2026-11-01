@@ -1,8 +1,15 @@
-/** כל הצלילים מיוצרים בקוד עם Web Audio, בלי קבצי שמע וזכויות יוצרים. */
+/** רעש הים הוא הקלטה אמיתית (CC0). הרולר והקליקים מיוצרים בקוד עם Web Audio. */
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
 let ocean: { stop: () => void } | null = null;
 let noise: AudioBuffer | null = null;
+let waves: Promise<AudioBuffer> | null = null;
+let oceanWanted = false;
+
+const WAVES_URL = `${import.meta.env.BASE_URL}sound/waves.m4a`;
+/** הקובץ מכיל חצי שנייה עודפת בכל צד, כדי שהלופ לא ייקטע. */
+const LOOP_START = 0.5;
+const LOOP_END = 60.5;
 
 function audio(): AudioContext | null {
   if (!ctx) {
@@ -18,20 +25,15 @@ function audio(): AudioContext | null {
 
 function noiseBuffer(c: AudioContext): AudioBuffer {
   if (noise) return noise;
-  const length = c.sampleRate * 8;
+  const length = c.sampleRate * 2;
   noise = c.createBuffer(2, length, c.sampleRate);
   for (let ch = 0; ch < 2; ch++) {
     const data = noise.getChannelData(ch);
     let last = 0;
-    // רעש חום: רך ועמוק, כמו ים מרחוק.
+    // רעש קצר שממנו בונים את הקליקים של הרולר.
     for (let i = 0; i < length; i++) {
       last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02;
       data[i] = last * 3.5;
-    }
-    // חיבור הקצוות, כדי שהלופ לא יישמע.
-    for (let i = 0; i < 4000; i++) {
-      const mix = i / 4000;
-      data[i] = data[i]! * mix + data[length - 4000 + i]! * (1 - mix);
     }
   }
   return noise;
@@ -41,45 +43,52 @@ export function setVolume(volume: number) {
   if (master) master.gain.value = volume;
 }
 
-function waveLayer(c: AudioContext, out: AudioNode, cutoff: number, level: number, rate: number) {
-  const src = c.createBufferSource();
-  src.buffer = noiseBuffer(c);
-  src.loop = true;
-  const filter = c.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.value = cutoff;
-  const gain = c.createGain();
-  gain.gain.value = level;
-  const lfo = c.createOscillator();
-  lfo.frequency.value = rate;
-  const depth = c.createGain();
-  depth.gain.value = level * 0.8;
-  lfo.connect(depth).connect(gain.gain);
-  src.connect(filter).connect(gain).connect(out);
-  src.start();
-  lfo.start();
-  return () => { src.stop(); lfo.stop(); };
+function loadWaves(c: AudioContext): Promise<AudioBuffer> {
+  waves ??= fetch(WAVES_URL)
+    .then((res) => {
+      if (!res.ok) throw new Error(`Sound failed: ${res.status}`);
+      return res.arrayBuffer();
+    })
+    .then((data) => c.decodeAudioData(data))
+    .catch((err: unknown) => {
+      waves = null;
+      throw err;
+    });
+  return waves;
 }
 
 export function startOcean(volume: number) {
   const c = audio();
   if (!c || !master || ocean) return;
+  oceanWanted = true;
   setVolume(volume);
-  const bus = c.createGain();
-  bus.gain.value = 0;
-  bus.gain.linearRampToValueAtTime(1, c.currentTime + 2);
-  bus.connect(master);
-  // שתי שכבות בקצב שונה: גל מתנפץ ושטיפה על החול.
-  const stops = [waveLayer(c, bus, 420, 0.5, 0.09), waveLayer(c, bus, 1300, 0.16, 0.143)];
-  ocean = {
-    stop() {
-      bus.gain.linearRampToValueAtTime(0, c.currentTime + 0.8);
-      setTimeout(() => { stops.forEach((s) => s()); bus.disconnect(); }, 900);
-    },
-  };
+  const out = master;
+  void loadWaves(c).then((buffer) => {
+    // ייתכן שהמשתמש כיבה בזמן שהקובץ נטען.
+    if (!oceanWanted || ocean) return;
+    const src = c.createBufferSource();
+    src.buffer = buffer;
+    src.loop = true;
+    src.loopStart = LOOP_START;
+    src.loopEnd = LOOP_END;
+    const bus = c.createGain();
+    bus.gain.setValueAtTime(0.0001, c.currentTime);
+    bus.gain.exponentialRampToValueAtTime(1.5, c.currentTime + 2.5);
+    src.connect(bus).connect(out);
+    src.start(0, LOOP_START);
+    ocean = {
+      stop() {
+        bus.gain.cancelScheduledValues(c.currentTime);
+        bus.gain.setValueAtTime(bus.gain.value, c.currentTime);
+        bus.gain.linearRampToValueAtTime(0, c.currentTime + 0.8);
+        setTimeout(() => { src.stop(); bus.disconnect(); }, 900);
+      },
+    };
+  }).catch(() => undefined);
 }
 
 export function stopOcean() {
+  oceanWanted = false;
   ocean?.stop();
   ocean = null;
 }
@@ -95,7 +104,7 @@ function tick(c: AudioContext, at: number, freq: number, level: number) {
   gain.gain.setValueAtTime(level, at);
   gain.gain.exponentialRampToValueAtTime(0.001, at + 0.03);
   src.connect(filter).connect(gain).connect(master!);
-  src.start(at, Math.random() * 6, 0.04);
+  src.start(at, Math.random() * 1.8, 0.04);
 }
 
 /** תקתוק קטן של רולר, ללחיצות. */

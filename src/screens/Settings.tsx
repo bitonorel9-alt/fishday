@@ -47,6 +47,7 @@ export function Settings({ settings, update }: { settings: S; update: (patch: Pa
         <Segment<TextSize> label="גודל כתב" value={settings.textSize} onChange={(textSize) => update({ textSize })}
           options={[["normal", "רגיל"], ["large", "גדול"], ["xlarge", "גדול מאוד"]]} />
         <Toggle label="עולם תת-ימי" hint="כרישים, דגים ובועות ברקע" checked={settings.seaScene} onChange={(seaScene) => update({ seaScene })} />
+        <Toggle label="דג קופץ במגע" hint="דג קטן קופץ מכל לחיצה" checked={settings.tapFish} onChange={(tapFish) => update({ tapFish })} />
       </Group>
 
       <Group title="צלילים">
@@ -58,7 +59,7 @@ export function Settings({ settings, update }: { settings: S; update: (patch: Pa
           <input type="range" min="0.1" max="1" step="0.1" value={settings.volume}
             onInput={(e) => { const volume = Number(e.currentTarget.value); update({ volume }); setVolume(volume); }} />
         </label>
-        <p class="muted small">באייפון, מתג ההשתקה בצד מכבה גם את הצלילים האלה.</p>
+        <p class="muted small">באייפון, מתג ההשתקה בצד מכבה גם את הצלילים האלה. הקלטת הגלים: <a href="https://commons.wikimedia.org/wiki/File:Ocean_Waves_on_a_Tropical_Beach.ogg" target="_blank" rel="noopener">Jarrod Stanley</a>, CC0.</p>
       </Group>
 
       <Group title="דיג">
