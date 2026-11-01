@@ -518,7 +518,7 @@ main {
 .rule h2 { font: 700 30px/1.1 var(--display); }
 .plain { display: flex; flex-direction: column; gap: 4px; padding-inline-start: 18px; list-style: disc; }
 .sources { font-size: 13px; display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
-.sources a { color: inherit; text-decoration: underline; }
+.sources a { display: inline-block; min-height: 24px; color: inherit; text-decoration: underline; }
 .field { display: flex; flex-direction: column; gap: 4px; font-size: 14px; font-weight: 500; }
 .field input, .field select {
   width: 100%;
