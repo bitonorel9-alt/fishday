@@ -77,7 +77,7 @@ export function Game() {
 
   const start = (m: GameMode) => {
     setMode(m);
-    trackEvent("game_start", { mode: m });
+    trackEvent("game_start");
     setRound(buildRound(m, seededRng(Date.now())));
     setIndex(0);
     setAnswers([]);
@@ -113,7 +113,7 @@ export function Game() {
 
   const next = () => {
     const last = index + 1 >= round.length;
-    if (last) trackEvent("game_end", { mode, score, correct: answers.filter((a) => a.correct).length });
+    if (last) trackEvent("game_end", score);
     if (last && score > best[mode]) {
       const updated = { ...best, [mode]: score };
       setBest(updated);

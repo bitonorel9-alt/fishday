@@ -42,7 +42,7 @@ function CatchForm({ now, onSaved, onCancel }: { now: LocalNow; onSaved: () => v
         photo: file ? await shrinkPhoto(file) : null,
         createdAt: Date.now(),
       });
-      trackEvent("catch_saved", { photo: file !== null });
+      trackEvent("catch_saved");
       const { clickSounds, volume } = loadSettings();
       if (clickSounds) reelSound(volume);
       onSaved();

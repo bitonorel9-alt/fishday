@@ -4,3 +4,5 @@ dist/
 .env
 .env.*
 CLAUDE.md
+.admin-key.txt
+stats/.wrangler/

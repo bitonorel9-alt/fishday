@@ -7,6 +7,7 @@ import { BEACHES } from "./domain/beaches";
 import { scoreForecast } from "./domain/insights";
 import { skyPhase } from "./domain/sky";
 import { addDays, israelClock, israelNow } from "./domain/time";
+import { Admin } from "./screens/Admin";
 import { Beaches } from "./screens/Beaches";
 import { BeachDetail } from "./screens/BeachDetail";
 import { FishDetail, FishList } from "./screens/Fish";
@@ -107,6 +108,7 @@ export function App() {
 
   let screen;
   if (hash === "#/game") screen = <Game />;
+  else if (hash === "#/admin") screen = <Admin />;
   else if (hash === "#/privacy") screen = <Privacy />;
   else if (hash === "#/settings") screen = <Settings settings={settings} update={update} />;
   else if (hash === "#/widget") screen = <Widget />;
