@@ -520,7 +520,7 @@ main {
 .sources { font-size: 13px; display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
 .sources a { display: inline-block; min-height: 24px; color: inherit; text-decoration: underline; }
 .field { display: flex; flex-direction: column; gap: 4px; font-size: 14px; font-weight: 500; }
-.field input, .field select {
+.field input, .field select, .field textarea {
   width: 100%;
   min-height: 46px;
   padding: 8px 12px;
@@ -664,3 +664,15 @@ main {
 :root[data-theme="dark"] .admin-bar { fill: #1199ab; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .admin-bar { fill: #1199ab; } }
 @media (max-width: 380px) { .admin-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* דיווח, תנאים ונגישות */
+.field textarea { resize: vertical; min-height: 120px; line-height: 1.5; font: inherit; font-size: 16px; }
+.report-link { align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); text-decoration: underline; }
+.btn-link { display: inline-flex; align-items: center; justify-content: center; align-self: flex-start; text-decoration: none; }
+.site-footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; margin-top: 10px; color: var(--muted); }
+.site-footer a { display: inline-flex; align-items: center; min-height: 44px; color: inherit; }
+.admin-feed { display: flex; flex-direction: column; }
+.admin-feed li { display: flex; flex-direction: column; gap: 4px; padding: 10px 0; border-bottom: 1px solid var(--surface-line); }
+.admin-feed li:last-child { border-bottom: 0; }
+.admin-feed p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.admin-feed code { display: block; font-size: 12.5px; overflow-wrap: anywhere; text-align: left; }

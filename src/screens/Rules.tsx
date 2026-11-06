@@ -5,6 +5,7 @@ import { BEACHES } from "../domain/beaches";
 import type { LocalNow } from "../domain/time";
 import { shortDate } from "../ui/format";
 import { Page } from "../ui/parts";
+import { ReportLink } from "./Feedback";
 
 function Sources({ list }: { list: Source[] }) {
   return (
@@ -106,6 +107,7 @@ export function Rules({ now }: { now: LocalNow }) {
         </ul>
         <p class="muted small">המפות להמחשה בלבד. בספק, מוקד רט"ג: <a href="tel:*3639" dir="ltr">3639*</a></p>
       </Rule>
+      <ReportLink kind="rules" label="מצאת טעות או חוק שהשתנה? דווח לנו" />
     </Page>
   );
 }

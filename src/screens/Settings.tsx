@@ -75,6 +75,11 @@ export function Settings({ settings, update }: { settings: S; update: (patch: Pa
           options={[["kmh", 'קמ"ש'], ["knots", "קשר"]]} />
       </Group>
 
+      <a class="card link-card" href="#/feedback/other">
+        <strong>דווח על טעות</strong>
+        <span class="muted small">ציון לא נכון, חוק שהשתנה, רעיון</span>
+      </a>
+
       <a class="card link-card" href="#/privacy">
         <strong>פרטיות</strong>
         <span class="muted small">מה נשמר בטלפון ומה נשלח</span>
@@ -83,6 +88,16 @@ export function Settings({ settings, update }: { settings: S; update: (patch: Pa
       <a class="card link-card" href="#/widget">
         <strong>ווידג'ט לאייפון</strong>
         <span class="muted small">ציון חי על מסך הבית</span>
+      </a>
+
+      <a class="card link-card" href="#/terms">
+        <strong>תנאי שימוש ובטיחות</strong>
+        <span class="muted small">הציון הוא הערכה, והים קובע</span>
+      </a>
+
+      <a class="card link-card" href="#/accessibility">
+        <strong>הצהרת נגישות</strong>
+        <span class="muted small">מה עשינו ואיך לדווח על בעיה</span>
       </a>
     </Page>
   );

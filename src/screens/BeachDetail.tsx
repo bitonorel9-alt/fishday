@@ -10,6 +10,7 @@ import { GUST_WARNING_KMH, WAVE_WARNING_M } from "../domain/score";
 import { formatHour, type LocalNow } from "../domain/time";
 import { periodText, TIER_LABEL, tierOf, timeText, waveText, windText } from "../ui/explain";
 import { dayLabel, hourLabel, shortDate } from "../ui/format";
+import { ReportLink } from "./Feedback";
 import { Attribution, ScoreBadge, ScoreCurve, Star } from "../ui/parts";
 import { windLabel, windValue, type WindUnit } from "../ui/settings";
 
@@ -180,6 +181,7 @@ export function BeachDetail({ beach, hours, forecast, now, favorite, onToggleFav
       </section>}
 
       <p class="muted small">הציון הוא הערכה לדיג בחכה מהחוף. הוא לא כולל זרמים, עכירות ולחץ ברומטרי.</p>
+      <ReportLink kind="beach" label="ציון לא נכון או טעות בחוף? דווח לנו" />
       <Attribution />
     </>
   );

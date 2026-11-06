@@ -5,6 +5,7 @@ import { FISH_PHOTOS } from "../content/fishPhotos";
 import { BEACHES } from "../domain/beaches";
 import { matchPercent } from "../domain/fishMatch";
 import { Page } from "../ui/parts";
+import { ReportLink } from "./Feedback";
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -136,6 +137,7 @@ export function FishDetail({ fish, month }: { fish: FishInfo; month: number }) {
       </section>
 
       <p class="muted small"><a href={fish.fishbase} target="_blank" rel="noopener">הדף של {fish.name} ב-FishBase</a></p>
+      <ReportLink kind="fish" />
     </>
   );
 }

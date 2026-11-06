@@ -1,6 +1,9 @@
 // שרת הסטטיסטיקה של FishDay: מקבל אירועים אנונימיים מהאפליקציה ומחזיר סיכומים ללוח הבקרה.
 const ALLOWED_ORIGINS = ["https://bitonorel9-alt.github.io", "http://localhost:4173", "http://localhost:5173"];
-const EVENTS = new Set(["page", "session_end", "game_start", "game_end", "catch_saved", "widget_copied"]);
+const EVENTS = new Set(["page", "session_end", "game_start", "game_end", "catch_saved", "widget_copied", "error"]);
+const KINDS = new Set(["score", "beach", "rules", "fish", "bug", "idea", "access", "other"]);
+const MAX_FEEDBACK_PER_DAY = 10;
+const MAX_ERRORS_PER_DAY = 20;
 const ID = /^[0-9a-f-]{8,40}$/;
 const MAX_SESSION_SEC = 4 * 3600;
 
@@ -34,9 +37,39 @@ async function collect(request, env, headers) {
   if (!ID.test(String(e.d)) || !ID.test(String(e.s)) || !EVENTS.has(e.n)) return new Response(null, { status: 400, headers });
   const page = typeof e.p === "string" ? e.p.slice(0, 60) : null;
   const num = typeof e.v === "number" && Number.isFinite(e.v) ? Math.max(0, Math.min(e.v, MAX_SESSION_SEC)) : null;
+  const msg = e.n === "error" && typeof e.m === "string" ? e.m.slice(0, 300) : null;
   const { day, hour } = israelParts(new Date());
-  await env.DB.prepare("INSERT INTO events (ts, day, hour, device, session, name, page, num, app) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-    .bind(Date.now(), day, hour, e.d, e.s, e.n, page, num, e.a ? 1 : 0)
+  if (e.n === "error") {
+    // שגיאה שחוזרת בלולאה לא תמלא את המסד.
+    const seen = await env.DB.prepare("SELECT COUNT(*) AS n FROM events WHERE name = 'error' AND device = ? AND day = ?").bind(e.d, day).first();
+    if ((seen?.n ?? 0) >= MAX_ERRORS_PER_DAY) return new Response(null, { status: 204, headers });
+  }
+  await env.DB.prepare("INSERT INTO events (ts, day, hour, device, session, name, page, num, app, msg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    .bind(Date.now(), day, hour, e.d, e.s, e.n, page, num, e.a ? 1 : 0, msg)
+    .run();
+  return new Response(null, { status: 204, headers });
+}
+
+async function feedback(request, env, headers) {
+  const origin = request.headers.get("Origin");
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) return new Response(null, { status: 403, headers });
+  const text = await request.text();
+  if (text.length > 4096) return new Response(null, { status: 413, headers });
+  let f;
+  try {
+    f = JSON.parse(text);
+  } catch {
+    return new Response(null, { status: 400, headers });
+  }
+  const body = typeof f.t === "string" ? f.t.trim().slice(0, 1000) : "";
+  if (!ID.test(String(f.d)) || !KINDS.has(f.k) || body.length < 3) return new Response(null, { status: 400, headers });
+  const { day } = israelParts(new Date());
+  const seen = await env.DB.prepare("SELECT COUNT(*) AS n FROM feedback WHERE device = ? AND day = ?").bind(f.d, day).first();
+  if ((seen?.n ?? 0) >= MAX_FEEDBACK_PER_DAY) return new Response(null, { status: 429, headers });
+  const page = typeof f.p === "string" ? f.p.slice(0, 60) : null;
+  const contact = typeof f.c === "string" && f.c.trim() ? f.c.trim().slice(0, 100) : null;
+  await env.DB.prepare("INSERT INTO feedback (ts, day, device, kind, page, text, contact) VALUES (?, ?, ?, ?, ?, ?, ?)")
+    .bind(Date.now(), day, f.d, f.k, page, body, contact)
     .run();
   return new Response(null, { status: 204, headers });
 }
@@ -56,7 +89,7 @@ async function stats(request, env, url, headers) {
   const one = (sql, ...args) => db.prepare(sql).bind(...args).first();
   const all = async (sql, ...args) => (await db.prepare(sql).bind(...args).all()).results;
 
-  const [totals, todayRow, weekRow, sessions, games, catches, widget, series, hours, pages, firstSeen] = await Promise.all([
+  const [totals, todayRow, weekRow, sessions, games, catches, widget, series, hours, pages, firstSeen, errorRow, errors, reports] = await Promise.all([
     one("SELECT COUNT(DISTINCT device) AS users, COUNT(DISTINCT session) AS sessions FROM events WHERE day >= ?", since),
     one("SELECT COUNT(DISTINCT device) AS users FROM events WHERE day = ?", today),
     one("SELECT COUNT(DISTINCT device) AS users FROM events WHERE day >= ?", week),
@@ -68,6 +101,9 @@ async function stats(request, env, url, headers) {
     all("SELECT hour, COUNT(DISTINCT session) AS sessions FROM events WHERE day >= ? GROUP BY hour ORDER BY hour", since),
     all("SELECT page, COUNT(*) AS views FROM events WHERE name = 'page' AND day >= ? GROUP BY page ORDER BY views DESC LIMIT 12", since),
     all("SELECT day, COUNT(*) AS users FROM (SELECT device, MIN(day) AS day FROM events GROUP BY device) WHERE day >= ? GROUP BY day ORDER BY day", since),
+    one("SELECT COUNT(*) AS n, COUNT(DISTINCT device) AS devices FROM events WHERE name = 'error' AND day >= ?", since),
+    all("SELECT msg, MAX(page) AS page, COUNT(*) AS n, COUNT(DISTINCT device) AS devices, MAX(ts) AS last FROM events WHERE name = 'error' AND day >= ? GROUP BY msg ORDER BY last DESC LIMIT 15", since),
+    all("SELECT ts, kind, page, text, contact FROM feedback ORDER BY ts DESC LIMIT 50"),
   ]);
 
   return Response.json({
@@ -82,6 +118,8 @@ async function stats(request, env, url, headers) {
     newUsers: firstSeen,
     hours,
     pages,
+    errors: { count: errorRow?.n ?? 0, devices: errorRow?.devices ?? 0, top: errors },
+    feedback: reports,
   }, { headers });
 }
 
@@ -91,6 +129,7 @@ export default {
     const headers = cors(request.headers.get("Origin") ?? "");
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
     if (request.method === "POST" && url.pathname === "/e") return collect(request, env, headers);
+    if (request.method === "POST" && url.pathname === "/feedback") return feedback(request, env, headers);
     if (request.method === "GET" && url.pathname === "/stats") return stats(request, env, url, headers);
     return new Response("FishDay stats", { status: 404, headers });
   },

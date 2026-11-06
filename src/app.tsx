@@ -15,6 +15,8 @@ import { Game } from "./screens/Game";
 import { GuideArticleView, GuideHome } from "./screens/Guide";
 import { Home } from "./screens/Home";
 import { Log } from "./screens/Log";
+import { Feedback } from "./screens/Feedback";
+import { Accessibility, Terms } from "./screens/Legal";
 import { Privacy } from "./screens/Privacy";
 import { Rules } from "./screens/Rules";
 import { Settings } from "./screens/Settings";
@@ -110,6 +112,9 @@ export function App() {
   if (hash === "#/game") screen = <Game />;
   else if (hash === "#/admin") screen = <Admin />;
   else if (hash === "#/privacy") screen = <Privacy />;
+  else if (hash === "#/terms") screen = <Terms />;
+  else if (hash === "#/accessibility") screen = <Accessibility />;
+  else if (hash.startsWith("#/feedback")) screen = <Feedback key={hash} route={hash} />;
   else if (hash === "#/settings") screen = <Settings settings={settings} update={update} />;
   else if (hash === "#/widget") screen = <Widget />;
   else if (hash === "#/rules") screen = <Rules now={now} />;
@@ -165,7 +170,15 @@ export function App() {
           <a class="icon-btn" href="#/settings" aria-label="הגדרות"><Icon name="settings" /></a>
         </div>
       </header>
-      <main>{screen}</main>
+      <main>
+        {screen}
+        <footer class="site-footer small">
+          <a href="#/accessibility">נגישות</a>
+          <a href="#/terms">תנאי שימוש</a>
+          <a href="#/privacy">פרטיות</a>
+          <a href="#/feedback">דווח על טעות</a>
+        </footer>
+      </main>
       <nav class="tabbar" aria-label="ניווט ראשי">
         {TABS.map((t) => {
           const active = t.href === "#/" ? hash === "#/" : t.href === "#/beaches" ? hash === t.href || beachId !== null : t.href === "#/guide" ? hash.startsWith("#/guide") || hash.startsWith("#/fish") || hash === "#/game" : hash.startsWith(t.href);

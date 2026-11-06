@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { STATS_URL } from "../data/analytics";
 import { readJson, writeJson } from "../data/storage";
 import { Page } from "../ui/parts";
+import { FEEDBACK_KINDS } from "./Feedback";
 
 const KEY_STORE = "fishday.admin.key";
 
@@ -16,7 +17,13 @@ interface Stats {
   newUsers: { day: string; users: number }[];
   hours: { hour: number; sessions: number }[];
   pages: { page: string; views: number }[];
+  errors?: { count: number; devices: number; top: { msg: string; page: string | null; n: number; devices: number; last: number }[] };
+  feedback?: { ts: number; kind: string; page: string | null; text: string; contact: string | null }[];
 }
+
+const KIND_LABEL = Object.fromEntries(FEEDBACK_KINDS);
+
+const when = (ts: number) => new Date(ts).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem", day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" });
 
 const PAGE_NAMES: Record<string, string> = {
   "/": "בית", "/beaches": "חופים", "/guide": "מדריך", "/fish": "דגים", "/rules": "מה מותר", "/log": "יומן",
@@ -132,6 +139,8 @@ export function Admin() {
             <Tile label="שעות שימוש" value={stats.sessions.totalHours} />
             <Tile label="משחקים" value={stats.games.played} hint={stats.games.played ? `ממוצע ${stats.games.avgScore}, שיא ${stats.games.best}` : undefined} />
             <Tile label="שלל שנשמר" value={stats.catches} />
+            <Tile label="דיווחים" value={stats.feedback?.length ?? 0} hint="50 האחרונים" />
+            <Tile label="שגיאות" value={stats.errors?.count ?? 0} hint={stats.errors?.devices ? `ב-${stats.errors.devices} מכשירים` : undefined} />
             <Tile label="מותקנת כאפליקציה" value={`${stats.sessions.installedShare}%`} hint="מהביקורים" />
           </div>
 
@@ -152,6 +161,36 @@ export function Admin() {
               <tbody>{stats.pages.map((p) => <tr key={p.page}><td>{pageLabel(p.page)}</td><td><bdi>{p.views}</bdi></td></tr>)}</tbody>
             </table>
           </section>
+          <section class="card rule">
+            <h2>דיווחים ממשתמשים</h2>
+            {stats.feedback?.length ? (
+              <ul class="admin-feed">
+                {stats.feedback.map((f) => (
+                  <li key={f.ts}>
+                    <div class="muted small"><bdi>{when(f.ts)}</bdi> · {KIND_LABEL[f.kind] ?? f.kind}{f.page && <> · <bdi dir="ltr">{f.page}</bdi></>}</div>
+                    <p>{f.text}</p>
+                    {f.contact && <p class="small">לחזור אל: <bdi dir="ltr">{f.contact}</bdi></p>}
+                  </li>
+                ))}
+              </ul>
+            ) : <p class="muted">אין עדיין דיווחים.</p>}
+          </section>
+
+          <section class="card rule">
+            <h2>שגיאות</h2>
+            <p class="small"><bdi>{stats.errors?.count ?? 0}</bdi> שגיאות מ-<bdi>{stats.errors?.devices ?? 0}</bdi> מכשירים ב-{stats.days} ימים.</p>
+            {stats.errors?.top.length ? (
+              <ul class="admin-feed">
+                {stats.errors.top.map((e) => (
+                  <li key={e.msg}>
+                    <div class="muted small"><bdi>{when(e.last)}</bdi> · <bdi>{e.n}</bdi> פעמים · <bdi>{e.devices}</bdi> מכשירים{e.page && <> · <bdi dir="ltr">{e.page}</bdi></>}</div>
+                    <code dir="ltr">{e.msg}</code>
+                  </li>
+                ))}
+              </ul>
+            ) : <p class="muted">אין שגיאות. יופי.</p>}
+          </section>
+
           <p class="muted small">ווידג'טים שהועתקו: <bdi>{stats.widgetCopies}</bdi>. משתמש הוא מכשיר: אותו אדם בשני מכשירים נספר פעמיים.</p>
         </>
       )}
