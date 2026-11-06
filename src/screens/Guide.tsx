@@ -15,6 +15,10 @@ export function GuideHome() {
           <span class="muted small">תמונות, זיהוי, ו"מה תפסתי?"</span>
         </span>
       </a>
+      <a class="card guide-game" href="#/game">
+        <strong>🎣 משחק דייגים</strong>
+        <span class="muted small">טריוויה וזיהוי דגים, 10 שאלות</span>
+      </a>
       <ul class="guide-list">
         {GUIDE.map((a) => (
           <li key={a.id}>

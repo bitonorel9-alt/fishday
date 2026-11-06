@@ -9,6 +9,7 @@ import { addDays, israelClock, israelNow } from "./domain/time";
 import { Beaches } from "./screens/Beaches";
 import { BeachDetail } from "./screens/BeachDetail";
 import { FishDetail, FishList } from "./screens/Fish";
+import { Game } from "./screens/Game";
 import { GuideArticleView, GuideHome } from "./screens/Guide";
 import { Home } from "./screens/Home";
 import { Log } from "./screens/Log";
@@ -102,7 +103,8 @@ export function App() {
   }, [phase]);
 
   let screen;
-  if (hash === "#/settings") screen = <Settings settings={settings} update={update} />;
+  if (hash === "#/game") screen = <Game />;
+  else if (hash === "#/settings") screen = <Settings settings={settings} update={update} />;
   else if (hash === "#/widget") screen = <Widget />;
   else if (hash === "#/rules") screen = <Rules now={now} />;
   else if (hash === "#/log") screen = <Log now={now} />;
@@ -160,7 +162,7 @@ export function App() {
       <main>{screen}</main>
       <nav class="tabbar" aria-label="ניווט ראשי">
         {TABS.map((t) => {
-          const active = t.href === "#/" ? hash === "#/" : t.href === "#/beaches" ? hash === t.href || beachId !== null : t.href === "#/guide" ? hash.startsWith("#/guide") || hash.startsWith("#/fish") : hash.startsWith(t.href);
+          const active = t.href === "#/" ? hash === "#/" : t.href === "#/beaches" ? hash === t.href || beachId !== null : t.href === "#/guide" ? hash.startsWith("#/guide") || hash.startsWith("#/fish") || hash === "#/game" : hash.startsWith(t.href);
           return (
             <a key={t.href} href={t.href} aria-current={active ? "page" : undefined}>
               <Icon name={t.icon} />

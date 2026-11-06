@@ -78,6 +78,11 @@ export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggle
         <span class="muted small">איך דגים, איזו חכה לקנות, ועם מי לצאת</span>
       </a>
 
+      <a class="card guide-promo game-promo" href="#/game">
+        <strong>🎣 משחק דייגים</strong>
+        <span class="muted small">כמה אתה מכיר את הדגים?</span>
+      </a>
+
       <h2 class="section-title">{favorites.length ? "החופים שלי" : "מובילים עכשיו"}</h2>
       <ul class="beach-list">
         {shown.map((beach) => (
