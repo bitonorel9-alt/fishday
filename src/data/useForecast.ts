@@ -1,9 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import { BEACHES } from "../domain/beaches";
 import { fetchForecast, type Forecast } from "./forecast";
 import { readJson, writeJson } from "./storage";
 
 const CACHE_KEY = "fishday.forecast.v1";
 const MAX_AGE_MS = 60 * 60 * 1000;
+
+/** תחזית שמורה ישנה מדי, או שנשמרה לפני שנוספו חופים, נטענת מחדש. */
+export function needsRefresh(f: Forecast | null, now: number, ids: string[] = BEACHES.map((b) => b.id)): boolean {
+  if (!f) return true;
+  if (now - f.fetchedAt >= MAX_AGE_MS) return true;
+  return ids.some((id) => !f.hours[id]?.length);
+}
 
 export type ForecastStatus = "loading" | "ready" | "failed";
 
@@ -27,8 +35,7 @@ export function useForecast() {
 
   useEffect(() => {
     const refreshIfOld = () => {
-      const age = latest.current ? Date.now() - latest.current.fetchedAt : Infinity;
-      if (age >= MAX_AGE_MS) void refresh();
+      if (needsRefresh(latest.current, Date.now())) void refresh();
       else setStatus("ready");
     };
     const onVisible = () => {

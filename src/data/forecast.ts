@@ -87,7 +87,7 @@ export async function fetchForecast(): Promise<Forecast> {
   const lon = BEACHES.map((b) => b.lon).join(",");
   const q = `latitude=${lat}&longitude=${lon}&timezone=Asia%2FJerusalem&forecast_days=7`;
   const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), 12_000);
+  const timer = setTimeout(() => ctl.abort(), 20_000);
   try {
     const [marine, weather] = await Promise.all([
       getJson(`https://marine-api.open-meteo.com/v1/marine?${q}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature`, ctl.signal),
