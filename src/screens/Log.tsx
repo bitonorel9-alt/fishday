@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { belowMinimum, SEA_FISH } from "../content/rules";
+import { trackEvent } from "../data/analytics";
 import { deleteCatch, listCatches, saveCatch, shrinkPhoto, type CatchEntry } from "../data/catchLog";
 import { BEACHES } from "../domain/beaches";
 import type { LocalNow } from "../domain/time";
@@ -41,6 +42,7 @@ function CatchForm({ now, onSaved, onCancel }: { now: LocalNow; onSaved: () => v
         photo: file ? await shrinkPhoto(file) : null,
         createdAt: Date.now(),
       });
+      trackEvent("catch_saved", { photo: file !== null });
       const { clickSounds, volume } = loadSettings();
       if (clickSounds) reelSound(volume);
       onSaved();

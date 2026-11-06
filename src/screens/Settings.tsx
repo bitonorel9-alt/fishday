@@ -75,6 +75,11 @@ export function Settings({ settings, update }: { settings: S; update: (patch: Pa
           options={[["kmh", 'קמ"ש'], ["knots", "קשר"]]} />
       </Group>
 
+      <a class="card link-card" href="#/privacy">
+        <strong>פרטיות</strong>
+        <span class="muted small">מה נשמר בטלפון ומה נשלח</span>
+      </a>
+
       <a class="card link-card" href="#/widget">
         <strong>ווידג'ט לאייפון</strong>
         <span class="muted small">ציון חי על מסך הבית</span>

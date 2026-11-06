@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { FISH } from "./content/fish";
+import { trackPage } from "./data/analytics";
 import { GUIDE } from "./content/guide";
 import { useForecast } from "./data/useForecast";
 import { BEACHES } from "./domain/beaches";
@@ -13,6 +14,7 @@ import { Game } from "./screens/Game";
 import { GuideArticleView, GuideHome } from "./screens/Guide";
 import { Home } from "./screens/Home";
 import { Log } from "./screens/Log";
+import { Privacy } from "./screens/Privacy";
 import { Rules } from "./screens/Rules";
 import { Settings } from "./screens/Settings";
 import { Widget } from "./screens/Widget";
@@ -39,6 +41,7 @@ function useRoute() {
     const onChange = () => {
       setHash(location.hash || "#/");
       window.scrollTo(0, 0);
+      trackPage();
     };
     window.addEventListener("hashchange", onChange);
     return () => window.removeEventListener("hashchange", onChange);
@@ -104,6 +107,7 @@ export function App() {
 
   let screen;
   if (hash === "#/game") screen = <Game />;
+  else if (hash === "#/privacy") screen = <Privacy />;
   else if (hash === "#/settings") screen = <Settings settings={settings} update={update} />;
   else if (hash === "#/widget") screen = <Widget />;
   else if (hash === "#/rules") screen = <Rules now={now} />;

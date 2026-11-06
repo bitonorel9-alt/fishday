@@ -1,4 +1,5 @@
 import { useState } from "preact/hooks";
+import { trackEvent } from "../data/analytics";
 import { readJson, writeJson } from "../data/storage";
 import { buildRound, pointsFor, rankFor, ROUND_LENGTH, seededRng, type GameMode, type Question } from "../domain/game";
 import { Page } from "../ui/parts";
@@ -76,6 +77,7 @@ export function Game() {
 
   const start = (m: GameMode) => {
     setMode(m);
+    trackEvent("game_start", { mode: m });
     setRound(buildRound(m, seededRng(Date.now())));
     setIndex(0);
     setAnswers([]);
@@ -111,6 +113,7 @@ export function Game() {
 
   const next = () => {
     const last = index + 1 >= round.length;
+    if (last) trackEvent("game_end", { mode, score, correct: answers.filter((a) => a.correct).length });
     if (last && score > best[mode]) {
       const updated = { ...best, [mode]: score };
       setBest(updated);

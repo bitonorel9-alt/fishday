@@ -1,4 +1,5 @@
 import { useState } from "preact/hooks";
+import { trackEvent } from "../data/analytics";
 import { Page } from "../ui/parts";
 
 const SCRIPT_URL = `${import.meta.env.BASE_URL}widget/fishday-widget.js`;
@@ -11,6 +12,7 @@ export function Widget() {
       const code = await (await fetch(SCRIPT_URL)).text();
       await navigator.clipboard.writeText(code);
       setCopied("done");
+      trackEvent("widget_copied");
     } catch {
       setCopied("failed");
     }

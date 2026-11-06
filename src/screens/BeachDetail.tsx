@@ -169,15 +169,15 @@ export function BeachDetail({ beach, hours, forecast, now, favorite, onToggleFav
         )}
       </section>
 
-      <section class="card rule">
+      {beach.tips.length > 0 && <section class="card rule">
         <h2>טיפים לדיג</h2>
         <ul class="plain">{beach.tips.map((t) => <li key={t}>{t}</li>)}</ul>
-      </section>
+      </section>}
 
-      <section class="card rule">
+      {beach.sights.length > 0 && <section class="card rule">
         <h2>מקומות יפים</h2>
         <ul class="plain">{beach.sights.map((t) => <li key={t}>{t}</li>)}</ul>
-      </section>
+      </section>}
 
       <p class="muted small">הציון הוא הערכה לדיג בחכה מהחוף. הוא לא כולל זרמים, עכירות ולחץ ברומטרי.</p>
       <Attribution />

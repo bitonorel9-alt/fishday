@@ -5,13 +5,31 @@
 const APP_URL = "https://bitonorel9-alt.github.io/fishday/";
 
 const BEACHES = [
+  { id: "achziv", name: "אכזיב", lat: 33.049, lon: 35.095, facing: 284, reserve: false },
+  { id: "shavei-zion", name: "שבי ציון", lat: 33.019, lon: 35.086, facing: 285, reserve: false },
+  { id: "nahariya", name: "נהריה", lat: 33.009, lon: 35.083, facing: 278, reserve: false },
+  { id: "akko", name: "עכו", lat: 32.918, lon: 35.063, facing: 259, shelteredFrom: [285, 360], reserve: false },
+  { id: "kiryat-yam", name: "קריית ים", lat: 32.859, lon: 35.061, facing: 292, shelteredFrom: [205, 245], reserve: false },
+  { id: "kiryat-haim", name: "קריית חיים", lat: 32.84, lon: 35.04, facing: 293, shelteredFrom: [190, 265], reserve: false },
   { id: "bat-galim", name: "בת גלים", lat: 32.836, lon: 34.96, facing: 335, shelteredFrom: [190, 250], reserve: false },
   { id: "dado", name: "חוף דדו", lat: 32.8, lon: 34.945, facing: 270, reserve: false },
-  { id: "kiryat-haim", name: "קריית חיים", lat: 32.84, lon: 35.04, facing: 293, shelteredFrom: [190, 265], reserve: false },
   { id: "atlit", name: "עתלית", lat: 32.716, lon: 34.938, facing: 285, shelteredFrom: [190, 225], reserve: false },
   { id: "neve-yam", name: "נווה ים", lat: 32.675, lon: 34.918, facing: 267, reserve: false },
   { id: "dor-habonim", name: "הבונים–דור", lat: 32.635, lon: 34.912, facing: 273, reserve: true },
   { id: "maagan-michael", name: "מעגן מיכאל", lat: 32.56, lon: 34.893, facing: 286, reserve: false },
+  { id: "caesarea", name: "קיסריה", lat: 32.517, lon: 34.892, facing: 279, reserve: false },
+  { id: "hadera", name: "חדרה", lat: 32.447, lon: 34.872, facing: 277, reserve: false },
+  { id: "michmoret", name: "מכמורת", lat: 32.406, lon: 34.862, facing: 285, reserve: false },
+  { id: "netanya", name: "נתניה", lat: 32.302, lon: 34.836, facing: 286, reserve: false },
+  { id: "herzliya", name: "הרצליה", lat: 32.166, lon: 34.792, facing: 274, reserve: false },
+  { id: "tel-aviv", name: "תל אביב", lat: 32.098, lon: 34.767, facing: 265, reserve: false },
+  { id: "jaffa", name: "יפו", lat: 32.056, lon: 34.746, facing: 291, shelteredFrom: [195, 225], reserve: false },
+  { id: "bat-yam", name: "בת ים", lat: 32.021, lon: 34.733, facing: 283, reserve: false },
+  { id: "palmachim", name: "פלמחים", lat: 31.934, lon: 34.695, facing: 304, reserve: false },
+  { id: "ashdod", name: "אשדוד", lat: 31.807, lon: 34.63, facing: 295, reserve: false },
+  { id: "nitzanim", name: "ניצנים", lat: 31.735, lon: 34.588, facing: 298, reserve: false },
+  { id: "ashkelon", name: "אשקלון", lat: 31.669, lon: 34.541, facing: 301, reserve: false },
+  { id: "zikim", name: "זיקים", lat: 31.615, lon: 34.5, facing: 300, reserve: false },
 ];
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));

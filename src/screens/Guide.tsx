@@ -1,6 +1,7 @@
 import { GUIDE, type GuideArticle } from "../content/guide";
 import { FISH_PHOTOS } from "../content/fishPhotos";
 import { Page } from "../ui/parts";
+import { QuizBanner } from "../ui/QuizBanner";
 
 const SARGUS = `${import.meta.env.BASE_URL}${FISH_PHOTOS.sargus?.file ?? ""}`;
 
@@ -15,10 +16,7 @@ export function GuideHome() {
           <span class="muted small">תמונות, זיהוי, ו"מה תפסתי?"</span>
         </span>
       </a>
-      <a class="card guide-game" href="#/game">
-        <strong>🎣 משחק דייגים</strong>
-        <span class="muted small">טריוויה וזיהוי דגים, 10 שאלות</span>
-      </a>
+      <QuizBanner compact />
       <ul class="guide-list">
         {GUIDE.map((a) => (
           <li key={a.id}>

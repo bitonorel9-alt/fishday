@@ -7,6 +7,7 @@ import { TIER_LABEL, tierOf } from "../ui/explain";
 import { dayLabel, durationLabel, hourLabel } from "../ui/format";
 import { windLabel, windValue, type WindUnit } from "../ui/settings";
 import { Hero, SunArc } from "../ui/Hero";
+import { QuizBanner } from "../ui/QuizBanner";
 import { Attribution, BeachRow, ScoreBadge } from "../ui/parts";
 
 interface Props {
@@ -78,10 +79,7 @@ export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggle
         <span class="muted small">איך דגים, איזו חכה לקנות, ועם מי לצאת</span>
       </a>
 
-      <a class="card guide-promo game-promo" href="#/game">
-        <strong>🎣 משחק דייגים</strong>
-        <span class="muted small">כמה אתה מכיר את הדגים?</span>
-      </a>
+      <QuizBanner />
 
       <h2 class="section-title">{favorites.length ? "החופים שלי" : "מובילים עכשיו"}</h2>
       <ul class="beach-list">
