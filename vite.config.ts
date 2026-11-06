@@ -13,7 +13,7 @@ export default defineConfig({
       manifest: {
         name: "FishDay",
         short_name: "FishDay",
-        description: "איפה ומתי כדאי לדוג היום בחופי חיפה והכרמל",
+        description: "איפה ומתי כדאי לדוג היום בחופי ישראל",
         lang: "he",
         dir: "rtl",
         start_url: "/fishday/",
