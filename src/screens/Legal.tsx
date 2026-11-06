@@ -76,6 +76,7 @@ export function Accessibility() {
       <section class="card rule">
         <h2>נתקלת בבעיה?</h2>
         <p>נשמח לשמוע ולתקן. כתוב מה לא עבד, באיזה מכשיר ובאיזה מסך.</p>
+        <p><strong>רכז הנגישות:</strong> אוראל ביטון. פניות דרך טופס הדיווח. אם השארת פרטי קשר, תקבל תשובה.</p>
         <a class="primary btn-link" href="#/feedback/access">דיווח על בעיית נגישות</a>
       </section>
       <p class="muted small">עודכן: {UPDATED}.</p>
