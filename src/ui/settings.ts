@@ -18,7 +18,7 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
-  theme: "system",
+  theme: "dark",
   textSize: "normal",
   seaScene: true,
   windUnit: "kmh",
@@ -29,10 +29,16 @@ export const DEFAULT_SETTINGS: Settings = {
   volume: 0.6,
 };
 
-const KEY = "fishday.settings.v1";
+const KEY = "fishday.settings.v2";
+const OLD_KEY = "fishday.settings.v1";
 
+/** בגרסה 1 ברירת המחדל הייתה "אוטומטי". מי שלא בחר בהיר עובר לכהה, ושאר ההגדרות נשמרות. */
 export function loadSettings(): Settings {
-  return { ...DEFAULT_SETTINGS, ...readJson<Partial<Settings>>(KEY) };
+  const saved = readJson<Partial<Settings>>(KEY);
+  if (saved) return { ...DEFAULT_SETTINGS, ...saved };
+  const old = readJson<Partial<Settings>>(OLD_KEY);
+  if (old?.theme === "system") delete old.theme;
+  return { ...DEFAULT_SETTINGS, ...old };
 }
 
 function apply(s: Settings) {
