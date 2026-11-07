@@ -21,6 +21,8 @@ import { Privacy } from "./screens/Privacy";
 import { Rules } from "./screens/Rules";
 import { Settings } from "./screens/Settings";
 import { Widget } from "./screens/Widget";
+import { Join } from "./screens/Join";
+import { joinSkipped, loadAccount, firstName, skipJoin, type Account } from "./data/account";
 import { updatedAgo } from "./ui/format";
 import { Hero } from "./ui/Hero";
 import { Icon, Logo } from "./ui/parts";
@@ -86,6 +88,9 @@ export function App() {
   const hash = useRoute();
   const nowMs = useClock();
   const { settings, update } = useSettings();
+  const [account, setAccount] = useState<Account | null>(loadAccount);
+  // ההרשמה מופיעה פעם אחת בכניסה הראשונה, ובכל פעם שנכנסים ל-#/join.
+  const [welcome, setWelcome] = useState(() => !loadAccount() && !joinSkipped());
   useSoundEffects(settings);
   const { forecast, status, refresh } = useForecast();
   const { favorites, toggle } = useFavorites();
@@ -115,7 +120,7 @@ export function App() {
   else if (hash === "#/terms") screen = <Terms />;
   else if (hash === "#/accessibility") screen = <Accessibility />;
   else if (hash.startsWith("#/feedback")) screen = <Feedback key={hash} route={hash} />;
-  else if (hash === "#/settings") screen = <Settings settings={settings} update={update} />;
+  else if (hash === "#/settings") screen = <Settings settings={settings} update={update} account={account} onAccountChange={setAccount} />;
   else if (hash === "#/widget") screen = <Widget />;
   else if (hash === "#/rules") screen = <Rules now={now} />;
   else if (hash === "#/log") screen = <Log now={now} />;
@@ -144,11 +149,24 @@ export function App() {
   } else if (hash === "#/beaches") {
     screen = <Beaches scored={scored} now={now} favorites={favorites} onToggleFavorite={toggle} />;
   } else {
-    screen = <Home scored={scored} now={now} clock={clock} sun={todaySun} tomorrowSun={tomorrowSun} favorites={favorites} onToggleFavorite={toggle} windUnit={settings.windUnit} homeBeach={settings.homeBeach} />;
+    screen = <Home scored={scored} now={now} clock={clock} sun={todaySun} tomorrowSun={tomorrowSun} favorites={favorites} onToggleFavorite={toggle} windUnit={settings.windUnit} homeBeach={settings.homeBeach} name={firstName(account)} />;
   }
+
+  const legalPage = hash === "#/privacy" || hash === "#/terms" || hash === "#/accessibility" || hash === "#/admin";
+  const showJoin = hash === "#/join" || (welcome && !account && !legalPage);
+  const closeJoin = () => {
+    setWelcome(false);
+    if (hash === "#/join") location.hash = "#/settings";
+  };
 
   return (
     <>
+      {showJoin && (
+        <Join
+          onDone={(a) => { setAccount(a); closeJoin(); }}
+          onLater={() => { skipJoin(); closeJoin(); }}
+        />
+      )}
       <Underwater animated={settings.seaScene} />
       <header class={`topbar${overHero ? " topbar-over" : ""}`}>
         <a href="#/" class="brand" dir="ltr" aria-label="FishDay, דף הבית"><Logo /><b>Fish<span>Day</span></b></a>

@@ -744,3 +744,40 @@ main {
 .mascot-close { position: absolute; top: 6px; left: 6px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: none; color: inherit; font-size: 22px; line-height: 1; cursor: pointer; opacity: .75; }
 .mascot-close:hover { opacity: 1; }
 .mascot-says:has(.mascot-close) .mascot-bubble { padding-left: 34px; }
+
+/* הרשמה: מסך מלא, ים עמוק עם דגי זהב שוחים */
+.join { position: fixed; inset: 0; z-index: 80; overflow-y: auto; overscroll-behavior: contain; background: radial-gradient(120% 80% at 50% 0%, #13565e, #072a30 55%, #04191d); color: #f4efe3; }
+.join-sea { position: fixed; inset: 0; overflow: hidden; pointer-events: none; color: rgb(230 195 111 / 22%); }
+.join-sea .rays { --ray: rgb(241 213 142 / 7%); }
+.join-sea .bubble { border-color: rgb(241 213 142 / 30%); }
+.join-fish { position: absolute; left: 0; display: block; animation: swim-left linear infinite; }
+.join-fish svg { display: block; width: 100%; height: 100%; }
+.jf1 { top: 8%; width: 120px; height: 70px; animation-duration: 30s; animation-delay: -4s; }
+.jf2 { top: 22%; width: 64px; height: 38px; animation-name: swim-right; animation-duration: 24s; animation-delay: -12s; color: rgb(230 195 111 / 30%); }
+.jf3 { top: 41%; width: 180px; height: 104px; animation-duration: 46s; animation-delay: -20s; color: rgb(230 195 111 / 12%); }
+.jf4 { top: 58%; width: 80px; height: 47px; animation-name: swim-right; animation-duration: 34s; animation-delay: -2s; }
+.jf5 { top: 72%; width: 140px; height: 81px; animation-duration: 38s; animation-delay: -28s; color: rgb(230 195 111 / 16%); }
+.jf6 { top: 86%; width: 56px; height: 33px; animation-name: swim-right; animation-duration: 20s; animation-delay: -8s; color: rgb(230 195 111 / 30%); }
+.jf7 { top: 33%; width: 44px; height: 26px; animation-duration: 18s; animation-delay: -14s; color: rgb(230 195 111 / 34%); }
+.join-panel { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; width: min(100%, 440px); margin: 0 auto; padding: calc(28px + env(safe-area-inset-top)) var(--gutter) calc(28px + env(safe-area-inset-bottom)); text-align: center; }
+.join-brand { display: flex; align-items: center; gap: 8px; }
+.join-brand .hero-wordmark { font-size: clamp(46px, 14vw, 62px); }
+.join-dani { display: flex; align-items: center; gap: 12px; width: 100%; margin: 18px 0 6px; text-align: start; }
+.join-dani .mascot-bubble { background: rgb(241 213 142 / 10%); border-color: rgb(241 213 142 / 28%); }
+.join-dani .mascot-bubble p { font-size: 17px; font-weight: 600; }
+.join-form { display: flex; flex-direction: column; gap: 12px; width: 100%; padding: 18px; border-radius: 24px; background: rgb(6 38 44 / 78%); border: 1px solid rgb(241 213 142 / 22%); text-align: start; }
+.join-form .field span { color: #e9dcbc; }
+.join-form .field input { background: rgb(4 25 29 / 70%); border-color: rgb(241 213 142 / 25%); color: #f4efe3; }
+.join-form .field input::placeholder { color: rgb(244 239 227 / 40%); }
+.join-form .field input:focus { border-color: #e6c36f; outline: none; box-shadow: 0 0 0 3px rgb(230 195 111 / 22%); }
+.join-check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14.5px; cursor: pointer; }
+.join-check input { width: 22px; height: 22px; accent-color: #d9ad55; flex: none; }
+.join-later { min-height: 44px; border: 0; background: none; color: #e9dcbc; font-size: 15px; text-decoration: underline; cursor: pointer; }
+.join-note { font-size: 12.5px; line-height: 1.5; color: rgb(244 239 227 / 68%); }
+.join-note a { color: #f1d58e; }
+.join-title { margin-top: 12px; font: italic 600 40px/1.1 "Cormorant Garamond", var(--display); color: #f1d58e; }
+.join-title:lang(he) { font: 700 46px/1 var(--display); }
+.join-lead { max-width: 320px; font-size: 16px; color: #e9dcbc; }
+.join-go { margin-top: 18px; min-width: 200px; }
+@media (prefers-reduced-motion: reduce) { .join-fish, .join-sea .bubble { animation: none; } }
+.join-done { min-height: 100svh; justify-content: center; }

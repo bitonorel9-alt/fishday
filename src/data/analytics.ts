@@ -8,7 +8,7 @@ const OPT_OUT_KEY = "fishday.analytics.off";
 const DEVICE_KEY = "fishday.device";
 const SESSION_KEY = "fishday.session";
 
-export type StatsEvent = "page" | "session_end" | "game_start" | "game_end" | "catch_saved" | "widget_copied" | "error";
+export type StatsEvent = "page" | "session_end" | "game_start" | "game_end" | "catch_saved" | "widget_copied" | "signup" | "error";
 
 // בפיתוח מקומי לא סופרים, כדי לא לערבב בדיקות עם משתמשים אמיתיים.
 export const analyticsConfigured = () => STATS_URL !== "" && import.meta.env.PROD;
@@ -39,6 +39,9 @@ function stableId(storage: Storage, key: string): string {
   return id;
 }
 
+/** מזהה אקראי של המכשיר. משמש גם להרשמה, כדי שרק המכשיר שנרשם יוכל למחוק. */
+export const deviceId = () => stableId(localStorage, DEVICE_KEY);
+
 const standalone = () => window.matchMedia("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true;
 
 function send(name: StatsEvent, page?: string, value?: number, message?: string) {
@@ -66,6 +69,7 @@ function send(name: StatsEvent, page?: string, value?: number, message?: string)
 export function pageName(hash: string): string {
   const path = hash.replace(/^#/, "") || "/";
   if (path === "/admin") return "";
+  if (path.startsWith("/join")) return "/join";
   if (path.startsWith("/feedback")) return "/feedback";
   return path.replace(/^\/(fish|guide)\/[^/]+$/, "/$1/:id");
 }

@@ -19,6 +19,7 @@ interface Stats {
   pages: { page: string; views: number }[];
   errors?: { count: number; devices: number; top: { msg: string; page: string | null; n: number; devices: number; last: number }[] };
   feedback?: { ts: number; kind: string; page: string | null; text: string; contact: string | null }[];
+  members?: { count: number; updates: number; recent: number; list: { name: string; email: string; updates: number; created: number }[] };
 }
 
 const KIND_LABEL = Object.fromEntries(FEEDBACK_KINDS);
@@ -139,6 +140,8 @@ export function Admin() {
             <Tile label="שעות שימוש" value={stats.sessions.totalHours} />
             <Tile label="משחקים" value={stats.games.played} hint={stats.games.played ? `ממוצע ${stats.games.avgScore}, שיא ${stats.games.best}` : undefined} />
             <Tile label="שלל שנשמר" value={stats.catches} />
+            <Tile label="חברים רשומים" value={stats.members?.count ?? 0} hint={`${stats.members?.recent ?? 0} חדשים ב-${stats.days} ימים`} />
+            <Tile label="מסכימים לעדכונים" value={stats.members?.updates ?? 0} />
             <Tile label="דיווחים" value={stats.feedback?.length ?? 0} hint="50 האחרונים" />
             <Tile label="שגיאות" value={stats.errors?.count ?? 0} hint={stats.errors?.devices ? `ב-${stats.errors.devices} מכשירים` : undefined} />
             <Tile label="מותקנת כאפליקציה" value={`${stats.sessions.installedShare}%`} hint="מהביקורים" />
@@ -161,6 +164,20 @@ export function Admin() {
               <tbody>{stats.pages.map((p) => <tr key={p.page}><td>{pageLabel(p.page)}</td><td><bdi>{p.views}</bdi></td></tr>)}</tbody>
             </table>
           </section>
+          <section class="card rule">
+            <h2>חברים</h2>
+            {stats.members?.list.length ? (
+              <ul class="admin-feed">
+                {stats.members.list.map((m) => (
+                  <li key={m.email}>
+                    <div class="muted small"><bdi>{when(m.created)}</bdi>{m.updates ? " · מסכים לעדכונים" : ""}</div>
+                    <p><strong>{m.name}</strong> · <bdi dir="ltr">{m.email}</bdi></p>
+                  </li>
+                ))}
+              </ul>
+            ) : <p class="muted">עוד אין חברים רשומים.</p>}
+          </section>
+
           <section class="card rule">
             <h2>דיווחים ממשתמשים</h2>
             {stats.feedback?.length ? (

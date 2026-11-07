@@ -26,10 +26,12 @@ interface Props {
   onToggleFavorite: (id: string) => void;
   windUnit: WindUnit;
   homeBeach: string | null;
+  name: string | null;
 }
 
-export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggleFavorite, windUnit, homeBeach }: Props) {
-  const [hello] = useState(() => greeting(now.hour, Math.random()));
+export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggleFavorite, windUnit, homeBeach, name }: Props) {
+  const [pick] = useState(Math.random);
+  const hello = greeting(now.hour, pick, name);
   // אזהרה שהוסתרה חוזרת למחרת, או כשמופיעה אזהרה מסוג אחר.
   const [hiddenWarning, setHiddenWarning] = useState(() => readJson<string>(WARN_KEY));
   const best = bestNow(scored, now);

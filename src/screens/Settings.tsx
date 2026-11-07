@@ -1,4 +1,6 @@
 import type { ComponentChildren } from "preact";
+import { useState } from "preact/hooks";
+import { deleteAccount, type Account } from "../data/account";
 import { BEACHES } from "../domain/beaches";
 import { Page } from "../ui/parts";
 import type { Settings as S, TextSize, ThemeChoice, WindUnit } from "../ui/settings";
@@ -38,9 +40,45 @@ function Group({ title, children }: { title: string; children: ComponentChildren
   );
 }
 
-export function Settings({ settings, update }: { settings: S; update: (patch: Partial<S>) => void }) {
+function AccountGroup({ account, onChange }: { account: Account | null; onChange: (a: Account | null) => void }) {
+  const [confirm, setConfirm] = useState(false);
+  const [error, setError] = useState(false);
+  if (!account) {
+    return (
+      <a class="card link-card" href="#/join">
+        <strong>הצטרפות ל-FishDay</strong>
+        <span class="muted small">שם ומייל, ודני יפנה אליך בשם</span>
+      </a>
+    );
+  }
+  return (
+    <Group title="החשבון שלי">
+      <p><strong>{account.name}</strong></p>
+      <p class="muted small"><bdi dir="ltr">{account.email}</bdi></p>
+      <p class="muted small">{account.updates ? "מקבל עדכונים במייל." : "בלי עדכונים במייל."}</p>
+      {error && <p class="alert" role="alert">המחיקה לא הצליחה. בדוק חיבור ונסה שוב.</p>}
+      {confirm ? (
+        <div class="form-actions">
+          <button type="button" class="secondary" onClick={() => setConfirm(false)}>ביטול</button>
+          <button type="button" class="primary" onClick={async () => {
+            const ok = await deleteAccount(account);
+            setError(!ok);
+            if (ok) onChange(null);
+          }}>כן, למחוק</button>
+        </div>
+      ) : (
+        <button type="button" class="link-danger" onClick={() => setConfirm(true)}>מחק את הפרטים שלי</button>
+      )}
+      {confirm && <p class="muted small">השם והמייל יימחקו מהשרת ומהטלפון. אי אפשר לבטל.</p>}
+    </Group>
+  );
+}
+
+export function Settings({ settings, update, account, onAccountChange }: { settings: S; update: (patch: Partial<S>) => void; account: Account | null; onAccountChange: (a: Account | null) => void }) {
   return (
     <Page title="הגדרות">
+      <AccountGroup account={account} onChange={onAccountChange} />
+
       <Group title="תצוגה">
         <Segment<ThemeChoice> label="מצב" value={settings.theme} onChange={(theme) => update({ theme })}
           options={[["system", "אוטומטי"], ["light", "בהיר"], ["dark", "כהה"]]} />

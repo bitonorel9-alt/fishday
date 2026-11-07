@@ -42,11 +42,21 @@ const GREETINGS: Record<"morning" | "noon" | "evening" | "night", string[]> = {
 };
 const ALWAYS = ["שלום, אני דני. אני מכיר כל חוף מאכזיב ועד זיקים.", "ים טוב, רוח טובה, וחכה מלאה."];
 
+/** מכניס את השם אחרי הברכה: "בוקר טוב, אוראל." */
+export function withName(line: string, name: string | null): string {
+  if (!name) return line;
+  const opener = line.match(/^(בוקר טוב|צהריים טובים|ערב טוב|לילה טוב|ערב שקט)\./);
+  if (opener) return line.replace(opener[0], `${opener[1]}, ${name}.`);
+  if (line.startsWith("שלום,")) return line.replace("שלום,", `שלום ${name},`);
+  if (line.startsWith("שלום.")) return line.replace("שלום.", `שלום ${name}.`);
+  return `${name}, ${line}`;
+}
+
 /** משפט פתיחה של דני לפי שעת היום. pick בין 0 ל-1, כדי שכל כניסה תקבל משפט אחר. */
-export function greeting(hour: number, pick: number): string {
+export function greeting(hour: number, pick: number, name: string | null = null): string {
   const part = hour >= 5 && hour < 11 ? "morning" : hour >= 11 && hour < 16 ? "noon" : hour >= 16 && hour < 20 ? "evening" : "night";
   const pool = [...GREETINGS[part], ...ALWAYS];
-  return pool[Math.min(pool.length - 1, Math.floor(pick * pool.length))]!;
+  return withName(pool[Math.min(pool.length - 1, Math.floor(pick * pool.length))]!, name);
 }
 
 /** מה הדג אומר במסך הבית. בטיחות קודמת לכל דבר אחר. */
