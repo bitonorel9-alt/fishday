@@ -25,29 +25,9 @@ export function Icon({ name }: { name: keyof typeof ICONS }) {
 }
 
 /** הלוגו: דג זהב שקופץ מעל גל, בתוך עיגול ים. */
+/** הלוגו: דג זהב קופץ מהמים בחכה. אותו קובץ כמו אייקון האפליקציה. */
 export function Logo() {
-  return (
-    <svg class="logo-mark" viewBox="0 0 48 48" width="36" height="36" aria-hidden="true">
-      <defs>
-        <linearGradient id="logo-sea" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#19c3d1" />
-          <stop offset="1" stop-color="#075985" />
-        </linearGradient>
-        <linearGradient id="logo-fish" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0" stop-color="#ff8a3c" />
-          <stop offset="1" stop-color="#ffd36b" />
-        </linearGradient>
-        <clipPath id="logo-disc"><circle cx="24" cy="24" r="23" /></clipPath>
-      </defs>
-      <circle cx="24" cy="24" r="23" fill="url(#logo-sea)" />
-      <g clip-path="url(#logo-disc)">
-        <path d="M0 37c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3 4 3 8 3v12H0z" fill="#fff" fill-opacity=".9" />
-        <path d="M0 42c4 0 4-2.500 8-2.500s4 2.500 8 2.500 4-2.500 8-2.500 4 2.500 8 2.500 4-2.500 8-2.500 4 2.500 8 2.500v8H0z" fill="#075985" />
-      </g>
-      <path d="M40 9C28 7.500 17 13 12.500 24L6 22l3.500 7-1.500 7 6.500-4C27 33 37 23 40 9Z" fill="url(#logo-fish)" />
-      <circle cx="33.500" cy="13.500" r="1.800" fill="#075985" />
-    </svg>
-  );
+  return <img class="logo-mark" src={`${import.meta.env.BASE_URL}icons/icon.svg`} width="36" height="36" alt="" />;
 }
 
 export function ScoreBadge({ score }: { score: number | null }) {

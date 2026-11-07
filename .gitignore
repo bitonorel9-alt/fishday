@@ -6,3 +6,7 @@ dist/
 CLAUDE.md
 .admin-key.txt
 stats/.wrangler/
+
+# טיוטות לוגו להשוואה, לא חלק מהאתר
+logo-*.png
+mascot-*.png

@@ -20,7 +20,7 @@ export default defineConfig({
         scope: "/fishday/",
         display: "standalone",
         orientation: "portrait",
-        background_color: "#151c4a",
+        background_color: "#06262c",
         theme_color: "#151c4a",
         icons: [
           { src: "icons/icon-192.png", sizes: "192x192", type: "image/png" },
