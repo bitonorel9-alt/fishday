@@ -41,9 +41,16 @@ function useDive() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let distance = 1;
     let queued = false;
+    let covered: boolean | null = null;
     const paint = () => {
       queued = false;
       const p = Math.min(1, Math.max(0, window.scrollY / distance));
+      // משנים את המחלקה רק כשהמצב מתחלף, לא בכל פריים.
+      const nowCovered = p < 0.98;
+      if (nowCovered !== covered) {
+        covered = nowCovered;
+        document.documentElement.classList.toggle("hero-active", nowCovered);
+      }
       const e = smooth(p);
       if (photo.current) photo.current.style.transform = `translate3d(0,0,0) scale(${(1 + e * 0.9).toFixed(4)})`;
       if (sun.current) sun.current.style.opacity = String(Math.max(0, 1 - p * 3));
@@ -70,6 +77,7 @@ function useDive() {
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", measure);
+      document.documentElement.classList.remove("hero-active");
     };
   }, []);
 

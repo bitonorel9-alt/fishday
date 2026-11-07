@@ -4,6 +4,7 @@ import { BREEDING_BANNED, BREEDING_SEASON, findFish, PROTECTED, RULES_CHECKED_AT
 import { BEACHES } from "../domain/beaches";
 import type { LocalNow } from "../domain/time";
 import { shortDate } from "../ui/format";
+import { MascotSays } from "../ui/Mascot";
 import { Page } from "../ui/parts";
 import { ReportLink } from "./Feedback";
 
@@ -40,10 +41,17 @@ export function Rules({ now }: { now: LocalNow }) {
   const [query, setQuery] = useState("");
   const results = findFish(query);
   const state = seasonState(now.date);
+  const dm = (iso: string) => `${Number(iso.slice(8))}.${Number(iso.slice(5, 7))}`;
+  const dani = state === "during"
+    ? { mood: "warn" as const, text: `עכשיו תקופת רבייה, עד ${dm(BREEDING_SEASON.end)}. יש ${BREEDING_BANNED.length} מינים שאסור לקחת. הרשימה למטה.` }
+    : state === "before"
+      ? { mood: "tip" as const, text: `תקופת הרבייה מתחילה ב-${dm(BREEDING_SEASON.start)}. עד אז, תבדוק גודל מינימום לפני שאתה לוקח דג.` }
+      : { mood: "tip" as const, text: "דג קטן מגודל המינימום חוזר למים. תחפש אותו כאן לפני שאתה לוקח." };
 
   return (
     <Page title="מה מותר">
       <p class="muted">לדיג בחכה מהחוף בים התיכון. נבדק מול המקורות ב-{RULES_CHECKED_AT}. זה לא ייעוץ משפטי, והשילוט בשטח קובע.</p>
+      <MascotSays {...dani} />
 
       <section class="card">
         <label class="field">

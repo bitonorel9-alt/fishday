@@ -39,7 +39,7 @@ const FACE: Record<Mood, { eye: keyof typeof EYE; brow: keyof typeof BROW; mouth
   night: { eye: "closed", brow: "low", mouth: "flat", prop: <path d={`M44 18a20 20 0 1 0 18 30 16 16 0 1 1-18-30Z${star(76, 22, 5)}`} fill={L} stroke="none" /> },
 };
 
-/** הדג של FishDay: מדליון זהב עם ראש הדניס. ההבעה משתנה לפי מה שהוא אומר. */
+/** דני, הדג של FishDay: מדליון זהב עם ראש הדניס. ההבעה משתנה לפי מה שהוא אומר. */
 export function Mascot({ mood, size = 56 }: { mood: Mood; size?: number }) {
   const id = useId();
   const f = FACE[mood];
@@ -72,7 +72,10 @@ export function MascotSays({ mood, text, inline = false }: { mood: Mood; text: s
   return (
     <div class={`${inline ? "" : "card "}mascot-says${mood === "warn" ? " mascot-warn" : ""}`}>
       <Mascot mood={mood} />
-      <p>{text}</p>
+      <div class="mascot-bubble">
+        <span class="mascot-name">דני</span>
+        <p>{text}</p>
+      </div>
     </div>
   );
 }

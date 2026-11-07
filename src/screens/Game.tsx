@@ -5,6 +5,7 @@ import { buildRound, pointsFor, rankFor, ROUND_LENGTH, seededRng, type GameMode,
 import { Page } from "../ui/parts";
 import { loadSettings } from "../ui/settings";
 import { clickSound, reelSound } from "../ui/sound";
+import { MascotSays } from "../ui/Mascot";
 import { jumpFish } from "../ui/tapFish";
 
 const BEST_KEY = "fishday.game.best.v1";
@@ -46,6 +47,10 @@ function Results({ answers, score, best, mode, onAgain, onMenu }: { answers: Ans
         <strong class="game-score"><bdi>{score}</bdi></strong>
         <span class="muted"><bdi>{correct}</bdi> מתוך {ROUND_LENGTH} נכונות{score >= best && score > 0 ? " · שיא חדש!" : ` · השיא שלך: ${best}`}</span>
       </section>
+      <MascotSays
+        mood={correct >= 8 ? "great" : correct >= 5 ? "recommend" : "tip"}
+        text={correct >= 8 ? "וואו. אתה מכיר את הים יותר טוב ממני." : correct >= 5 ? "יפה מאוד. עוד סבב או שניים ואתה רב-חובל." : "כל דייג התחיל ככה. תעבור על מה שכדאי לזכור, ונסה שוב."}
+      />
       {missed.length > 0 && (
         <section class="card rule">
           <h2>מה כדאי לזכור</h2>

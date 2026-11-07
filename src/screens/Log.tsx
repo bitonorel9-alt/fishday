@@ -7,6 +7,7 @@ import type { LocalNow } from "../domain/time";
 import { shortDate } from "../ui/format";
 import { Page } from "../ui/parts";
 import { loadSettings } from "../ui/settings";
+import { MascotSays } from "../ui/Mascot";
 import { castSound, reelSound } from "../ui/sound";
 
 function Photo({ blob, alt }: { blob: Blob; alt: string }) {
@@ -114,7 +115,7 @@ export function Log({ now }: { now: LocalNow }) {
           setAdding(true);
         }}>הוספת שלל</button>
       )}
-      {entries?.length === 0 && !adding && <p class="muted empty">עדיין אין שלל. הדג הראשון מחכה.</p>}
+      {entries?.length === 0 && !adding && <MascotSays mood="tip" text="עוד לא רשמת שלל. תפסת משהו? תרשום אותו, ואני אלמד מה עובד לך בכל חוף." />}
       <ul class="catch-list">
         {entries?.map((c) => (
           <li class="card catch" key={c.id}>

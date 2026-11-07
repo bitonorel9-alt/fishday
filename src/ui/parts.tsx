@@ -1,3 +1,4 @@
+import { useId } from "preact/hooks";
 import type { ComponentChildren } from "preact";
 import type { Beach } from "../domain/beaches";
 import type { ScoredHour } from "../domain/insights";
@@ -24,10 +25,29 @@ export function Icon({ name }: { name: keyof typeof ICONS }) {
   );
 }
 
-/** הלוגו: דג זהב שקופץ מעל גל, בתוך עיגול ים. */
-/** הלוגו: דג זהב קופץ מהמים בחכה. אותו קובץ כמו אייקון האפליקציה. */
+/** הלוגו: דג זהב קופץ מהמים בחכה, בלי רקע. קווים עבים יותר מהאייקון, כדי שיישאר חד בגודל קטן. */
 export function Logo() {
-  return <img class="logo-mark" src={`${import.meta.env.BASE_URL}icons/icon.svg`} width="36" height="36" alt="" />;
+  const id = useId();
+  return (
+    <svg class="logo-mark" viewBox="0 50 470 370" width="46" height="36" aria-hidden="true">
+      <defs>
+        <linearGradient id={`${id}g`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#f7e2a6" /><stop offset=".45" stop-color="#d2a64e" /><stop offset=".7" stop-color="#f1d58e" /><stop offset="1" stop-color="#b8883a" />
+        </linearGradient>
+      </defs>
+      <g fill="none" stroke={`url(#${id}g)`} stroke-linecap="round" stroke-linejoin="round">
+        <path d="M-10 220Q258 46 446 92" stroke-width="18" />
+        <path d="M446 92L363 198" stroke-width="8" />
+        <g transform="translate(262 246) rotate(-28) scale(.8)" stroke-width="27">
+          <path d="M140 6C128-40 74-78 4-76C-50-74-92-50-112-22L-150-58C-144-30-140-14-134 2C-140 18-144 34-150 62L-112 28C-90 56-46 76 6 74C70 72 122 46 140 6Z" />
+          <path d="M78-52C92-20 92 22 78 52" stroke-width="20" />
+          <circle cx="104" cy="-22" r="13" fill={`url(#${id}g)`} stroke="none" />
+        </g>
+        <path d="M86 392c28 0 28-16 56-16s28 16 56 16 28-16 56-16 28 16 56 16 28-16 56-16 28 16 56 16" stroke-width="20" />
+        <path d="M120 384c4-18 12-28 24-36M190 384c-4-18-12-28-24-36" stroke-width="12" />
+      </g>
+    </svg>
+  );
 }
 
 export function ScoreBadge({ score }: { score: number | null }) {
