@@ -1,4 +1,5 @@
-import { homeAdvice } from "../domain/advice";
+import { useState } from "preact/hooks";
+import { greeting, homeAdvice } from "../domain/advice";
 import { BEACHES } from "../domain/beaches";
 import { bestNow, hasWarningSoon, nextWindow, spotsNow, type ScoredForecast } from "../domain/insights";
 import { GUST_WARNING_KMH, WAVE_WARNING_M, type Sun } from "../domain/score";
@@ -8,9 +9,9 @@ import { TIER_LABEL, tierOf } from "../ui/explain";
 import { dayLabel, durationLabel, hourLabel } from "../ui/format";
 import { windLabel, windValue, type WindUnit } from "../ui/settings";
 import { Hero, SunArc } from "../ui/Hero";
-import { MascotSays } from "../ui/Mascot";
+import { Mascot, MascotSays } from "../ui/Mascot";
 import { QuizBanner } from "../ui/QuizBanner";
-import { Attribution, BeachRow, ScoreBadge } from "../ui/parts";
+import { Attribution, BeachRow, Logo, ScoreBadge } from "../ui/parts";
 
 interface Props {
   scored: ScoredForecast;
@@ -25,6 +26,7 @@ interface Props {
 }
 
 export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggleFavorite, windUnit, homeBeach }: Props) {
+  const [hello] = useState(() => greeting(now.hour, Math.random()));
   const best = bestNow(scored, now);
   const window = nextWindow(scored, now);
   const warnings = hasWarningSoon(scored, now);
@@ -48,7 +50,22 @@ export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggle
 
   return (
     <>
-      <Hero waveHeight={best?.hour.waveHeight ?? null}>
+      <Hero
+        waveHeight={best?.hour.waveHeight ?? null}
+        top={
+          <>
+            <div class="hero-brand" dir="ltr">
+              <Logo size={86} />
+              <span class="hero-wordmark">Fish<span>Day</span></span>
+            </div>
+            <p class="hero-tagline">דיג בזמן הנכון</p>
+            <div class="hero-hello">
+              <Mascot mood="hello" size={46} />
+              <p><b>דני</b> {hello}</p>
+            </div>
+          </>
+        }
+      >
         {warnings.waves && <p class="alert" role="alert">⚠ גלים מעל {WAVE_WARNING_M} מ' ב-24 השעות הקרובות. לא לעלות על שוברי גלים.</p>}
         {warnings.gusts && <p class="alert" role="alert">⚠ משבי רוח מעל {GUST_WARNING_KMH} קמ"ש ב-24 השעות הקרובות.</p>}
 

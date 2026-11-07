@@ -18,6 +18,37 @@ export interface WindowLabel {
 
 const windowText = (w: WindowLabel) => `${w.name}, ${w.day} ב-${w.start}`;
 
+const GREETINGS: Record<"morning" | "noon" | "evening" | "night", string[]> = {
+  morning: [
+    "בוקר טוב. הים כבר ער, ואני כבר בדקתי אותו בשבילך.",
+    "בוקר טוב. קפה, חכה, ויוצאים.",
+    "בוקר טוב. עכשיו הדגים הכי רעבים.",
+  ],
+  noon: [
+    "צהריים טובים. הים יחכה לשקיעה, וגם אני.",
+    "שלום. בוא נראה איפה שווה להיות הערב.",
+    "צהריים טובים. זה הזמן להכין פיתיון.",
+  ],
+  evening: [
+    "ערב טוב. שעת הזהב מתקרבת.",
+    "ערב טוב. השמש יורדת, והדגים עולים.",
+    "ערב טוב. אין כמו שקיעה עם חכה ביד.",
+  ],
+  night: [
+    "לילה טוב. אני כבר מתכנן לך את הבוקר.",
+    "לילה טוב. הים נח, ומחר מתחילים מוקדם.",
+    "ערב שקט. הכוכבים בחוץ, והדגים בבית.",
+  ],
+};
+const ALWAYS = ["שלום, אני דני. אני מכיר כל חוף מאכזיב ועד זיקים.", "ים טוב, רוח טובה, וחכה מלאה."];
+
+/** משפט פתיחה של דני לפי שעת היום. pick בין 0 ל-1, כדי שכל כניסה תקבל משפט אחר. */
+export function greeting(hour: number, pick: number): string {
+  const part = hour >= 5 && hour < 11 ? "morning" : hour >= 11 && hour < 16 ? "noon" : hour >= 16 && hour < 20 ? "evening" : "night";
+  const pool = [...GREETINGS[part], ...ALWAYS];
+  return pool[Math.min(pool.length - 1, Math.floor(pick * pool.length))]!;
+}
+
 /** מה הדג אומר במסך הבית. בטיחות קודמת לכל דבר אחר. */
 export function homeAdvice(o: {
   best: { name: string; score: number | null } | null;

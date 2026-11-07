@@ -28,7 +28,10 @@ function Waves({ height }: { height: number | null }) {
 
 const smooth = (p: number) => p * p * (3 - 2 * p);
 
-/** הצלילה: הגלילה מניעה רק transform ו-opacity, כדי שהתנועה תישאר חלקה. */
+/**
+ * הצלילה. בדפדפן שתומך באנימציית גלילה (Chrome 115, Safari 26), הדפדפן מזיז הכל בעצמו בלי JavaScript בכל פריים.
+ * בדפדפן ישן, הגלילה מניעה transform ו-opacity דרך requestAnimationFrame.
+ */
 function useDive() {
   const wrap = useRef<HTMLDivElement>(null);
   const photo = useRef<HTMLImageElement>(null);
@@ -36,9 +39,12 @@ function useDive() {
   const content = useRef<HTMLDivElement>(null);
   const water = useRef<HTMLDivElement>(null);
   const hint = useRef<HTMLButtonElement>(null);
+  const top = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const native = typeof CSS !== "undefined" && CSS.supports("animation-timeline: scroll()");
+    if (native) wrap.current?.classList.add("dive-css");
     let distance = 1;
     let queued = false;
     let covered: boolean | null = null;
@@ -51,6 +57,7 @@ function useDive() {
         covered = nowCovered;
         document.documentElement.classList.toggle("hero-active", nowCovered);
       }
+      if (native) return;
       const e = smooth(p);
       if (photo.current) photo.current.style.transform = `translate3d(0,0,0) scale(${(1 + e * 0.9).toFixed(4)})`;
       if (sun.current) sun.current.style.opacity = String(Math.max(0, 1 - p * 3));
@@ -60,6 +67,10 @@ function useDive() {
       }
       if (water.current) water.current.style.transform = `translate3d(0,${(66 - 84 * e).toFixed(2)}%,0)`;
       if (hint.current) hint.current.style.opacity = String(Math.max(0, 1 - p * 7));
+      if (top.current) {
+        top.current.style.opacity = String(Math.max(0, 1 - p * 3.4));
+        top.current.style.transform = `translate3d(0,${(-90 * p).toFixed(1)}px,0)`;
+      }
     };
     const onScroll = () => {
       if (queued) return;
@@ -69,7 +80,7 @@ function useDive() {
     const measure = () => {
       const el = wrap.current;
       distance = el ? Math.max(1, el.offsetHeight - window.innerHeight) : 1;
-      onScroll();
+      paint();
     };
     measure();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -81,11 +92,11 @@ function useDive() {
     };
   }, []);
 
-  return { wrap, photo, sun, content, water, hint };
+  return { wrap, photo, sun, content, water, hint, top };
 }
 
-export function Hero({ waveHeight, children }: { waveHeight: number | null; children: ComponentChildren }) {
-  const { wrap, photo, sun, content, water, hint } = useDive();
+export function Hero({ waveHeight, top: topContent, children }: { waveHeight: number | null; top?: ComponentChildren; children: ComponentChildren }) {
+  const { wrap, photo, sun, content, water, hint, top } = useDive();
   const dive = () => {
     const el = wrap.current;
     if (el) window.scrollTo({ top: el.offsetHeight - window.innerHeight, behavior: "smooth" });
@@ -102,6 +113,7 @@ export function Hero({ waveHeight, children }: { waveHeight: number | null; chil
             <i /><i /><i /><i /><i />
           </div>
         </div>
+        {topContent && <div ref={top} class="hero-top">{topContent}</div>}
         <div ref={content} class="hero-content">{children}</div>
         <button ref={hint} type="button" class="dive-hint" onClick={dive} aria-label="צלילה אל התוכן">
           <span>גלול לצלילה</span>

@@ -26,10 +26,10 @@ export function Icon({ name }: { name: keyof typeof ICONS }) {
 }
 
 /** הלוגו: דג זהב קופץ מהמים בחכה, בלי רקע. קווים עבים יותר מהאייקון, כדי שיישאר חד בגודל קטן. */
-export function Logo() {
+export function Logo({ size = 36 }: { size?: number }) {
   const id = useId();
   return (
-    <svg class="logo-mark" viewBox="0 50 470 370" width="46" height="36" aria-hidden="true">
+    <svg class="logo-mark" viewBox="0 50 470 370" width={Math.round((size * 470) / 370)} height={size} aria-hidden="true">
       <defs>
         <linearGradient id={`${id}g`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stop-color="#f7e2a6" /><stop offset=".45" stop-color="#d2a64e" /><stop offset=".7" stop-color="#f1d58e" /><stop offset="1" stop-color="#b8883a" />

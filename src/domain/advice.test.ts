@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { homeAdvice, hourAdvice } from "./advice";
+import { greeting, homeAdvice, hourAdvice } from "./advice";
 import { BEACHES } from "./beaches";
 import type { ScoredHour } from "./insights";
 
@@ -67,5 +67,18 @@ describe("הדג על שעה בחוף", () => {
   });
   it("בלי ציון לא ממציא", () => {
     expect(hourAdvice(hour({ score: null }), atlit, sun).text).toContain("אין לי");
+  });
+});
+
+describe("משפט הפתיחה של דני", () => {
+  it("בבוקר אומר בוקר טוב או משפט כללי", () => {
+    expect(greeting(7, 0)).toContain("בוקר טוב");
+  });
+  it("בלילה לא אומר בוקר טוב", () => {
+    for (let i = 0; i < 10; i++) expect(greeting(23, i / 10)).not.toContain("בוקר טוב");
+  });
+  it("תמיד מחזיר משפט, גם בקצה הטווח", () => {
+    expect(greeting(12, 0.9999).length).toBeGreaterThan(5);
+    expect(greeting(0, 1).length).toBeGreaterThan(5);
   });
 });
