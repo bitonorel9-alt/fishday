@@ -68,7 +68,7 @@ export function Mascot({ mood, size = 56 }: { mood: Mood; size?: number }) {
 }
 
 /** הדג אומר משהו: מדליון ובועת טקסט. */
-export function MascotSays({ mood, text, inline = false }: { mood: Mood; text: string; inline?: boolean }) {
+export function MascotSays({ mood, text, inline = false, onClose }: { mood: Mood; text: string; inline?: boolean; onClose?: () => void }) {
   return (
     <div class={`${inline ? "" : "card "}mascot-says${mood === "warn" ? " mascot-warn" : ""}`}>
       <Mascot mood={mood} />
@@ -76,6 +76,7 @@ export function MascotSays({ mood, text, inline = false }: { mood: Mood; text: s
         <span class="mascot-name">דני</span>
         <p>{text}</p>
       </div>
+      {onClose && <button type="button" class="mascot-close" aria-label="הסתר את האזהרה עד מחר" onClick={onClose}>×</button>}
     </div>
   );
 }

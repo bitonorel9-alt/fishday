@@ -1,8 +1,9 @@
 import { useState } from "preact/hooks";
+import { readJson, writeJson } from "../data/storage";
 import { greeting, homeAdvice } from "../domain/advice";
 import { BEACHES } from "../domain/beaches";
 import { bestNow, hasWarningSoon, nextWindow, spotsNow, type ScoredForecast } from "../domain/insights";
-import { GUST_WARNING_KMH, WAVE_WARNING_M, type Sun } from "../domain/score";
+import type { Sun } from "../domain/score";
 import { nextSunEvent } from "../domain/sky";
 import type { LocalNow } from "../domain/time";
 import { TIER_LABEL, tierOf } from "../ui/explain";
@@ -12,6 +13,8 @@ import { Hero, SunArc } from "../ui/Hero";
 import { Mascot, MascotSays } from "../ui/Mascot";
 import { QuizBanner } from "../ui/QuizBanner";
 import { Attribution, BeachRow, Logo, ScoreBadge } from "../ui/parts";
+
+const WARN_KEY = "fishday.warning.hidden";
 
 interface Props {
   scored: ScoredForecast;
@@ -27,6 +30,8 @@ interface Props {
 
 export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggleFavorite, windUnit, homeBeach }: Props) {
   const [hello] = useState(() => greeting(now.hour, Math.random()));
+  // אזהרה שהוסתרה חוזרת למחרת, או כשמופיעה אזהרה מסוג אחר.
+  const [hiddenWarning, setHiddenWarning] = useState(() => readJson<string>(WARN_KEY));
   const best = bestNow(scored, now);
   const window = nextWindow(scored, now);
   const warnings = hasWarningSoon(scored, now);
@@ -40,11 +45,13 @@ export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggle
         .map((s) => s.beach);
   const mine = BEACHES.find((b) => b.id === homeBeach);
   const shown = mine ? [mine, ...base.filter((b) => b.id !== mine.id)] : base;
+  const warningSig = warnings.waves || warnings.gusts ? `${now.date}:${warnings.waves ? "w" : ""}${warnings.gusts ? "g" : ""}` : null;
+  const showWarning = warningSig !== null && hiddenWarning !== warningSig;
   const advice = homeAdvice({
     best: best && { name: best.beach.name, score: best.score },
     window: window && { name: window.beach.name, day: dayLabel(window.date, now), start: hourLabel(window.startHour) },
-    waves: warnings.waves,
-    gusts: warnings.gusts,
+    waves: showWarning && warnings.waves,
+    gusts: showWarning && warnings.gusts,
     night: sun !== null && (clock < sun.sunrise - 1 || clock > sun.sunset + 1),
   });
 
@@ -66,9 +73,6 @@ export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggle
           </>
         }
       >
-        {warnings.waves && <p class="alert" role="alert">⚠ גלים מעל {WAVE_WARNING_M} מ' ב-24 השעות הקרובות. לא לעלות על שוברי גלים.</p>}
-        {warnings.gusts && <p class="alert" role="alert">⚠ משבי רוח מעל {GUST_WARNING_KMH} קמ"ש ב-24 השעות הקרובות.</p>}
-
         <p class="hero-eyebrow">הכי טוב עכשיו</p>
         {best ? (
           <>
@@ -89,7 +93,7 @@ export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggle
         {sun && <SunArc t={clock} sun={sun} next={event && `${event.kind === "sunset" ? "שקיעה" : "זריחה"} בעוד ${durationLabel(event.inHours)}`} />}
       </Hero>
 
-      <MascotSays {...advice} />
+      <MascotSays {...advice} onClose={showWarning ? () => { writeJson(WARN_KEY, warningSig); setHiddenWarning(warningSig); } : undefined} />
 
       {window && (
         <a class="window" href={`#/beach/${window.beach.id}`}>

@@ -1,6 +1,6 @@
 import type { Beach } from "./beaches";
 import type { ScoredHour } from "./insights";
-import { isOffshore, isOnshore, timeScore, type Sun } from "./score";
+import { GUST_WARNING_KMH, isOffshore, isOnshore, timeScore, WAVE_WARNING_M, type Sun } from "./score";
 
 /** מצב הרוח של הדג. כל מצב מתאים להבעה אחרת במדליון. */
 export type Mood = "hello" | "recommend" | "great" | "warn" | "tip" | "night";
@@ -57,8 +57,8 @@ export function homeAdvice(o: {
   gusts: boolean;
   night: boolean;
 }): Advice {
-  if (o.waves) return { mood: "warn", text: "גלים גבוהים ביממה הקרובה. נהנים מהחוף, לא עולים על שוברי הגלים." };
-  if (o.gusts) return { mood: "warn", text: "משבים חזקים בדרך. תתרחק מהקצה ותחזיק חזק את החכה." };
+  if (o.waves) return { mood: "warn", text: `גלים מעל ${WAVE_WARNING_M} מ' ביממה הקרובה. נהנים מהחוף, לא עולים על שוברי הגלים.` };
+  if (o.gusts) return { mood: "warn", text: `משבי רוח מעל ${GUST_WARNING_KMH} קמ"ש ביממה הקרובה. תתרחק מהקצה ותחזיק חזק את החכה.` };
   if (o.night) {
     return o.window
       ? { mood: "night", text: `עכשיו לילה. החלון הבא שלי: ${windowText(o.window)}.` }
