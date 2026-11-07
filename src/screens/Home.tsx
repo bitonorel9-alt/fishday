@@ -1,3 +1,4 @@
+import { homeAdvice } from "../domain/advice";
 import { BEACHES } from "../domain/beaches";
 import { bestNow, hasWarningSoon, nextWindow, spotsNow, type ScoredForecast } from "../domain/insights";
 import { GUST_WARNING_KMH, WAVE_WARNING_M, type Sun } from "../domain/score";
@@ -7,6 +8,7 @@ import { TIER_LABEL, tierOf } from "../ui/explain";
 import { dayLabel, durationLabel, hourLabel } from "../ui/format";
 import { windLabel, windValue, type WindUnit } from "../ui/settings";
 import { Hero, SunArc } from "../ui/Hero";
+import { MascotSays } from "../ui/Mascot";
 import { QuizBanner } from "../ui/QuizBanner";
 import { Attribution, BeachRow, ScoreBadge } from "../ui/parts";
 
@@ -36,6 +38,13 @@ export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggle
         .map((s) => s.beach);
   const mine = BEACHES.find((b) => b.id === homeBeach);
   const shown = mine ? [mine, ...base.filter((b) => b.id !== mine.id)] : base;
+  const advice = homeAdvice({
+    best: best && { name: best.beach.name, score: best.score },
+    window: window && { name: window.beach.name, day: dayLabel(window.date, now), start: hourLabel(window.startHour) },
+    waves: warnings.waves,
+    gusts: warnings.gusts,
+    night: sun !== null && (clock < sun.sunrise - 1 || clock > sun.sunset + 1),
+  });
 
   return (
     <>
@@ -62,6 +71,8 @@ export function Home({ scored, now, clock, sun, tomorrowSun, favorites, onToggle
         )}
         {sun && <SunArc t={clock} sun={sun} next={event && `${event.kind === "sunset" ? "שקיעה" : "זריחה"} בעוד ${durationLabel(event.inHours)}`} />}
       </Hero>
+
+      <MascotSays {...advice} />
 
       {window && (
         <a class="window" href={`#/beach/${window.beach.id}`}>

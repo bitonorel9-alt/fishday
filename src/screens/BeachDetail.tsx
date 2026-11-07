@@ -11,6 +11,8 @@ import { formatHour, type LocalNow } from "../domain/time";
 import { periodText, TIER_LABEL, tierOf, timeText, waveText, windText } from "../ui/explain";
 import { dayLabel, hourLabel, shortDate } from "../ui/format";
 import { ReportLink } from "./Feedback";
+import { hourAdvice } from "../domain/advice";
+import { MascotSays } from "../ui/Mascot";
 import { Attribution, ScoreBadge, ScoreCurve, Star } from "../ui/parts";
 import { windLabel, windValue, type WindUnit } from "../ui/settings";
 
@@ -88,6 +90,7 @@ export function BeachDetail({ beach, hours, forecast, now, favorite, onToggleFav
             </div>
             <ScoreBadge score={selected.score} />
           </div>
+          {day && <MascotSays inline {...hourAdvice(selected, beach, day.sun)} />}
 
           {selected.warnings.some((w) => w.kind === "waves") && <p class="alert">⚠ גלים מעל {WAVE_WARNING_M} מ'. לא לעלות על שוברי גלים.</p>}
           {selected.warnings.some((w) => w.kind === "gusts") && <p class="alert">⚠ משבי רוח מעל {GUST_WARNING_KMH} קמ"ש.</p>}

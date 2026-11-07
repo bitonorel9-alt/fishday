@@ -1,4 +1,5 @@
-const FISH_SVG = `<svg viewBox="0 0 48 30" aria-hidden="true"><path d="M3 15C9 5 24 2 37 8l9-6-2 13 2 13-9-6C24 28 9 25 3 15Z" fill="url(#g)"/><circle cx="14" cy="13" r="1.800" fill="#075985"/><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#ffd66e"/><stop offset="1" stop-color="#ff7a36"/></linearGradient></defs></svg>`;
+// אותו דג זהב בקו כמו בלוגו, פונה שמאלה.
+const FISH_SVG = `<svg viewBox="-160 -90 312 180" aria-hidden="true"><defs><linearGradient id="tap-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7e2a6"/><stop offset=".45" stop-color="#d2a64e"/><stop offset=".7" stop-color="#f1d58e"/><stop offset="1" stop-color="#b8883a"/></linearGradient></defs><g transform="scale(-1 1)" fill="none" stroke="url(#tap-gold)" stroke-width="18" stroke-linejoin="round" stroke-linecap="round"><path d="M140 6C128-40 74-78 4-76C-50-74-92-50-112-22L-150-58C-144-30-140-14-134 2C-140 18-144 34-150 62L-112 28C-90 56-46 76 6 74C70 72 122 46 140 6Z"/><path d="M78-52C92-20 92 22 78 52"/><circle cx="104" cy="-22" r="11" fill="#f1d58e" stroke="none"/></g></svg>`;
 
 const MAX_ACTIVE = 4;
 let active = 0;

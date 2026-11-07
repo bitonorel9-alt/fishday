@@ -351,8 +351,8 @@ main {
 
 /* דג שקופץ מהמגע */
 .tap-fish { position: fixed; z-index: 50; width: 0; height: 0; pointer-events: none; }
-.tap-fish span { position: absolute; left: -17px; top: -11px; display: block; width: 34px; height: 21px; animation: fish-hop 0.760s cubic-bezier(0.3, 0.6, 0.5, 1) forwards; }
-.tap-fish svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgb(5 33 58 / 35%)); }
+.tap-fish span { position: absolute; left: -19px; top: -11px; display: block; width: 38px; height: 22px; animation: fish-hop 0.760s cubic-bezier(0.3, 0.6, 0.5, 1) forwards; }
+.tap-fish svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 1px 2px rgb(6 38 44 / 55%)) drop-shadow(0 0 6px rgb(230 195 111 / 35%)); }
 .tap-ring { position: absolute; left: -12px; top: -12px; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #e6c36f; opacity: 0; animation: tap-ring 0.620s ease-out forwards; }
 .tap-ring-2 { animation-delay: 0.100s; }
 @keyframes fish-hop {
@@ -685,3 +685,10 @@ main {
 .admin-feed li:last-child { border-bottom: 0; }
 .admin-feed p { white-space: pre-wrap; overflow-wrap: anywhere; }
 .admin-feed code { display: block; font-size: 12.5px; overflow-wrap: anywhere; text-align: left; }
+
+/* הדג של FishDay: מדליון ובועת דיבור */
+.mascot { flex: none; display: block; filter: drop-shadow(0 4px 10px rgb(6 38 44 / 35%)); }
+.mascot-says { display: flex; align-items: center; gap: 12px; }
+.mascot-says p { position: relative; flex: 1; padding: 10px 14px; border-radius: 16px; background: color-mix(in srgb, var(--gold) 12%, transparent); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); font-size: 15px; line-height: 1.45; }
+.mascot-warn p { background: var(--alert-bg); color: var(--alert-ink); border-color: transparent; font-weight: 500; }
+.factors .mascot-says { margin: 10px 0 4px; }
