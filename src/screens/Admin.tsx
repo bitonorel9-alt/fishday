@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { STATS_URL } from "../data/analytics";
 import { readJson, writeJson } from "../data/storage";
 import { Page } from "../ui/parts";
+import { SocialToday } from "./SocialToday";
 import { FEEDBACK_KINDS } from "./Feedback";
 
 const KEY_STORE = "fishday.admin.key";
@@ -124,6 +125,7 @@ export function Admin() {
 
   return (
     <Page title="בקרה">
+      <SocialToday />
       <div class="segment" role="group" aria-label="טווח">
         {[7, 30, 90].map((d) => <button type="button" key={d} aria-pressed={d === days} onClick={() => setDays(d)}>{d} ימים</button>)}
       </div>

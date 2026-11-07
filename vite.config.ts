@@ -79,7 +79,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,webp,woff2}"],
-        globIgnores: ["widget/**"],
+        globIgnores: ["widget/**", "social/**"],
         runtimeCaching: [
           {
             urlPattern: /\/sound\/.*\.m4a$/,

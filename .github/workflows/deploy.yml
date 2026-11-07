@@ -4,6 +4,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      render:
+        description: "ליצור עכשיו סרטוני סושיאל חדשים"
+        type: boolean
+        default: false
+  # סרטוני הבוקר: 05:00 ו-06:00 UTC. בדיקת השעה למטה מריצה רק את מה שנופל על 8:00 בישראל, בקיץ ובחורף.
+  schedule:
+    - cron: "0 5 * * *"
+    - cron: "0 6 * * *"
 
 permissions:
   contents: read
@@ -12,7 +21,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -20,33 +29,75 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
+      - name: Decide
+        id: gate
+        run: |
+          hour=$(TZ=Asia/Jerusalem date +%H)
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ "$hour" = "08" ]; then echo "go=true" >> "$GITHUB_OUTPUT"; echo "render=true" >> "$GITHUB_OUTPUT"; else echo "go=false" >> "$GITHUB_OUTPUT"; fi
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+            echo "render=${{ github.event.inputs.render == 'true' }}" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Israel hour: $hour"
+
       - name: Checkout
+        if: steps.gate.outputs.go == 'true'
         uses: actions/checkout@v4
 
       - name: Setup Node
+        if: steps.gate.outputs.go == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
 
       - name: Install
+        if: steps.gate.outputs.go == 'true'
         run: npm ci
 
       - name: Test
+        if: steps.gate.outputs.go == 'true'
         run: npm test
 
       - name: Build
+        if: steps.gate.outputs.go == 'true'
         run: npm run build
 
+      # בעדכון קוד: שומרים את סרטוני הבוקר שכבר באתר, במקום ליצור חדשים.
+      - name: Keep today's videos
+        id: keep
+        if: steps.gate.outputs.go == 'true' && steps.gate.outputs.render != 'true'
+        run: |
+          base="https://bitonorel9-alt.github.io/fishday/social"
+          mkdir -p dist/social
+          if curl -fsSL "$base/today.json" -o dist/social/today.json; then
+            for f in $(node -e "for (const v of require('./dist/social/today.json').videos) console.log(v.file)"); do
+              curl -fsSL "$base/$f" -o "dist/social/$f"
+            done
+            echo "kept=true" >> "$GITHUB_OUTPUT"
+          else
+            rm -f dist/social/today.json
+            echo "kept=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Render social videos
+        if: steps.gate.outputs.go == 'true' && (steps.gate.outputs.render == 'true' || steps.keep.outputs.kept == 'false')
+        run: npx tsx scripts/social/render.tsx dist/social
+
       - name: Configure Pages
+        if: steps.gate.outputs.go == 'true'
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
+        if: steps.gate.outputs.go == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
       - name: Deploy to GitHub Pages
+        if: steps.gate.outputs.go == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
