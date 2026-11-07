@@ -1,7 +1,11 @@
 import { render } from "preact";
-import "@fontsource/ibm-plex-sans-hebrew/400.css";
-import "@fontsource/ibm-plex-sans-hebrew/600.css";
-import "@fontsource/karantina/700.css";
+// רק עברית ולטינית: בלי קירילית ושפות אחרות שלא בשימוש.
+import "@fontsource/ibm-plex-sans-hebrew/hebrew-400.css";
+import "@fontsource/ibm-plex-sans-hebrew/latin-400.css";
+import "@fontsource/ibm-plex-sans-hebrew/hebrew-600.css";
+import "@fontsource/ibm-plex-sans-hebrew/latin-600.css";
+import "@fontsource/karantina/hebrew-700.css";
+import "@fontsource/karantina/latin-700.css";
 import "@fontsource/cormorant-garamond/latin-600-italic.css";
 import { App } from "./app";
 import { startAnalytics, startErrorTracking } from "./data/analytics";

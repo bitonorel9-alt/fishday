@@ -1,26 +1,11 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { FISH } from "./content/fish";
 import { trackPage } from "./data/analytics";
-import { GUIDE } from "./content/guide";
 import { useForecast } from "./data/useForecast";
 import { BEACHES } from "./domain/beaches";
 import { scoreForecast } from "./domain/insights";
 import { skyPhase } from "./domain/sky";
 import { addDays, israelClock, israelNow } from "./domain/time";
-import { Admin } from "./screens/Admin";
-import { Beaches } from "./screens/Beaches";
-import { BeachDetail } from "./screens/BeachDetail";
-import { FishDetail, FishList } from "./screens/Fish";
-import { Game } from "./screens/Game";
-import { GuideArticleView, GuideHome } from "./screens/Guide";
 import { Home } from "./screens/Home";
-import { Log } from "./screens/Log";
-import { Feedback } from "./screens/Feedback";
-import { Accessibility, Terms } from "./screens/Legal";
-import { Privacy } from "./screens/Privacy";
-import { Rules } from "./screens/Rules";
-import { Settings } from "./screens/Settings";
-import { Widget } from "./screens/Widget";
 import { Join } from "./screens/Join";
 import { joinSkipped, loadAccount, firstName, skipJoin, type Account } from "./data/account";
 import { updatedAgo } from "./ui/format";
@@ -31,6 +16,33 @@ import { clickSound, startOcean, stopOcean } from "./ui/sound";
 import { jumpFish } from "./ui/tapFish";
 import { Underwater } from "./ui/Underwater";
 import { useFavorites } from "./ui/useFavorites";
+import { lazy } from "./ui/lazy";
+
+// מסכים שלא צריך במסך הבית נטענים רק כשנכנסים אליהם.
+const Beaches = lazy(() => import("./screens/Beaches").then((m) => m.Beaches));
+const BeachDetail = lazy(() => import("./screens/BeachDetail").then((m) => m.BeachDetail));
+const Settings = lazy(() => import("./screens/Settings").then((m) => m.Settings));
+const Admin = lazy(() => import("./screens/Admin").then((m) => m.Admin));
+const Game = lazy(() => import("./screens/Game").then((m) => m.Game));
+const Log = lazy(() => import("./screens/Log").then((m) => m.Log));
+const Feedback = lazy(() => import("./screens/Feedback").then((m) => m.Feedback));
+const Terms = lazy(() => import("./screens/Legal").then((m) => m.Terms));
+const Accessibility = lazy(() => import("./screens/Legal").then((m) => m.Accessibility));
+const Privacy = lazy(() => import("./screens/Privacy").then((m) => m.Privacy));
+const Rules = lazy(() => import("./screens/Rules").then((m) => m.Rules));
+const Widget = lazy(() => import("./screens/Widget").then((m) => m.Widget));
+const FishScreen = lazy(() =>
+  Promise.all([import("./screens/Fish"), import("./content/fish")]).then(([m, c]) => ({ id, month }: { id: string | null; month: number }) => {
+    const fish = c.FISH.find((f) => f.id === id);
+    return fish ? <m.FishDetail fish={fish} month={month} /> : <m.FishList />;
+  }),
+);
+const GuideScreen = lazy(() =>
+  Promise.all([import("./screens/Guide"), import("./content/guide")]).then(([m, c]) => ({ id }: { id: string | null }) => {
+    const article = c.GUIDE.find((a) => a.id === id);
+    return article ? <m.GuideArticleView article={article} /> : <m.GuideHome />;
+  }),
+);
 
 const TABS = [
   { href: "#/", label: "בית", icon: "home" },
@@ -105,8 +117,6 @@ export function App() {
   const tomorrowSun = forecast?.days.find((d) => d.date === addDays(now.date, 1))?.sun ?? null;
   const phase = todaySun ? skyPhase(clock, todaySun) : "golden";
   const fishId = hash.startsWith("#/fish/") ? hash.slice("#/fish/".length) : null;
-  const fish = FISH.find((f) => f.id === fishId);
-  const article = GUIDE.find((a) => hash === `#/guide/${a.id}`);
   const overHero = hash === "#/";
 
   useEffect(() => {
@@ -124,10 +134,9 @@ export function App() {
   else if (hash === "#/widget") screen = <Widget />;
   else if (hash === "#/rules") screen = <Rules now={now} />;
   else if (hash === "#/log") screen = <Log now={now} />;
-  else if (fish) screen = <FishDetail fish={fish} month={Number(now.date.slice(5, 7))} />;
-  else if (hash.startsWith("#/fish")) screen = <FishList />;
-  else if (article) screen = <GuideArticleView article={article} />;
-  else if (hash.startsWith("#/guide")) screen = <GuideHome />;
+  else if (hash.startsWith("#/fish")) screen = <FishScreen key={hash} id={fishId} month={Number(now.date.slice(5, 7))} />;
+  else if (hash.startsWith("#/guide/")) screen = <GuideScreen key={hash} id={hash.slice("#/guide/".length)} />;
+  else if (hash.startsWith("#/guide")) screen = <GuideScreen key="guide" id={null} />;
   else if (!forecast || !scored) {
     screen = status === "failed" ? (
       <div class="empty">
@@ -159,14 +168,18 @@ export function App() {
     if (hash === "#/join") location.hash = "#/settings";
   };
 
+  // בזמן מסך ההרשמה לא מציירים את האפליקציה מאחוריו: ממילא לא רואים אותה, וזה מאט את הטעינה הראשונה.
+  if (showJoin) {
+    return (
+      <Join
+        onDone={(a) => { setAccount(a); closeJoin(); }}
+        onLater={() => { skipJoin(); closeJoin(); }}
+      />
+    );
+  }
+
   return (
     <>
-      {showJoin && (
-        <Join
-          onDone={(a) => { setAccount(a); closeJoin(); }}
-          onLater={() => { skipJoin(); closeJoin(); }}
-        />
-      )}
       <Underwater animated={settings.seaScene} />
       <header class={`topbar${overHero ? " topbar-over" : ""}`}>
         <a href="#/" class="brand" dir="ltr" aria-label="FishDay, דף הבית"><Logo /><b>Fish<span>Day</span></b></a>

@@ -88,7 +88,7 @@ async function readJson(request, headers, max) {
   }
 }
 
-/** הרשמה: שם ומייל. אותו מייל שנרשם שוב מעדכן את הפרטים. */
+/** הרשמה: שם ומייל. אותו מייל שנרשם שוב מעדכן את הפרטים, אבל רק מהמכשיר שרשם אותו: אחרת כל אחד יכול לשנות פרטים של אדם אחר. */
 async function signup(request, env, headers) {
   const { body: m, error } = await readJson(request, headers, 1024);
   if (error) return error;
@@ -99,7 +99,7 @@ async function signup(request, env, headers) {
   const seen = await env.DB.prepare("SELECT COUNT(*) AS n FROM members WHERE device = ? AND updated > ?").bind(m.d, dayStart).first();
   if ((seen?.n ?? 0) >= MAX_SIGNUPS_PER_DAY) return new Response(null, { status: 429, headers });
   const now = Date.now();
-  await env.DB.prepare("INSERT INTO members (email, name, updates, device, created, updated) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(email) DO UPDATE SET name = excluded.name, updates = excluded.updates, device = excluded.device, updated = excluded.updated")
+  await env.DB.prepare("INSERT INTO members (email, name, updates, device, created, updated) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(email) DO UPDATE SET name = excluded.name, updates = excluded.updates, updated = excluded.updated WHERE members.device = excluded.device")
     .bind(email, name, m.u ? 1 : 0, m.d, now, now)
     .run();
   return new Response(null, { status: 204, headers });
@@ -121,7 +121,7 @@ function daysAgo(n) {
 
 async function stats(request, env, url, headers) {
   const auth = request.headers.get("Authorization") ?? "";
-  if (!env.STATS_KEY || auth !== `Bearer ${env.STATS_KEY}`) return new Response("unauthorized", { status: 401, headers });
+  if (!env.STATS_KEY || !(await sameSecret(auth, `Bearer ${env.STATS_KEY}`))) return new Response("unauthorized", { status: 401, headers });
   const days = Math.max(1, Math.min(90, Number(url.searchParams.get("days")) || 30));
   const since = daysAgo(days - 1);
   const today = daysAgo(0);
@@ -167,11 +167,30 @@ async function stats(request, env, url, headers) {
   }, { headers });
 }
 
+/** השוואת מפתח בזמן קבוע, כדי שאי אפשר יהיה לנחש אותו לפי זמני תגובה. */
+async function sameSecret(given, expected) {
+  const enc = new TextEncoder();
+  const [a, b] = await Promise.all([crypto.subtle.digest("SHA-256", enc.encode(given)), crypto.subtle.digest("SHA-256", enc.encode(expected))]);
+  return crypto.subtle.timingSafeEqual(a, b);
+}
+
+/**
+ * הגבלת קצב לפי כתובת IP, נפרדת לכל נתיב. הכתובת משמשת רק כמפתח זמני בזיכרון של Cloudflare ולא נשמרת.
+ * בלי ה-binding (למשל בפיתוח מקומי) הבדיקה מדולגת.
+ */
+async function allowed(request, env, url) {
+  if (!env.LIMITER) return true;
+  const ip = request.headers.get("CF-Connecting-IP") ?? "unknown";
+  const { success } = await env.LIMITER.limit({ key: `${url.pathname}:${ip}` });
+  return success;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    const headers = cors(request.headers.get("Origin") ?? "");
+    const headers = { ...cors(request.headers.get("Origin") ?? ""), "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer", "Cache-Control": "no-store" };
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
+    if (!(await allowed(request, env, url))) return new Response(null, { status: 429, headers });
     if (request.method === "POST" && url.pathname === "/e") return collect(request, env, headers);
     if (request.method === "POST" && url.pathname === "/signup") return signup(request, env, headers);
     if (request.method === "POST" && url.pathname === "/signup/delete") return unsubscribe(request, env, headers);

@@ -8,3 +8,9 @@ preview_urls = false
 binding = "DB"
 database_name = "fishday-stats"
 database_id = "b6789b53-2171-42f5-9ca4-a4a416a87b6b"
+
+# הגבלת קצב לפי IP: עד 60 בקשות בדקה לכל נתיב.
+[[ratelimits]]
+name = "LIMITER"
+namespace_id = "1701"
+simple = { limit = 60, period = 60 }
